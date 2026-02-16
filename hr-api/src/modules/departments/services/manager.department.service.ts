@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from '../entities/department.entity';
 import { Repository } from 'typeorm';
 import { CreateDepartmentDto } from '../dto/create.department.dto';
+import { UpdateDepartmentDto } from '../dto/update.department.dto';
 
 @Injectable()
 export class DrepertmentManagerService {
@@ -36,5 +37,12 @@ export class DrepertmentManagerService {
     }
 
     return department;
-  } 
+  };
+
+  // update department
+  async update(id: number, payload: UpdateDepartmentDto): Promise<Department> {
+    const department = await this.findOne(id);
+    const merged = this.departmentRepository.merge(department, payload);
+    return await this.departmentRepository.save(merged);
+  }
 }
