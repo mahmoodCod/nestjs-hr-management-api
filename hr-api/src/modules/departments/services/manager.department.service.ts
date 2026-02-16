@@ -16,5 +16,12 @@ export class DrepertmentManagerService {
     const depertment = this.departmentRepository.create(payload);
 
     return this.departmentRepository.save(depertment);
-  }
+  };
+
+  // get all departments
+  async findAll(): Promise<Department[]> {
+    return await this.departmentRepository.find({
+        order: { createAt: 'DESC' },
+    });
+  };
 }
