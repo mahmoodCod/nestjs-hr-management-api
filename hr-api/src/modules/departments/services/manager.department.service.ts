@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from '../entities/department.entity';
 import { Repository } from 'typeorm';
+import { CreateDepartmentDto } from '../dto/create.department.dto';
 
 @Injectable()
 export class DrepertmentManagerService {
