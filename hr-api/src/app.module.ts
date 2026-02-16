@@ -1,26 +1,31 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    // config module for get env variable data
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
 
-    // db conection
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
-      synchronize: true,
+    // db conection typeorm
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DB_HOST', 'localhost'),
+        port: Number(configService.get('DB_PORT', 3306)),
+        username: configService.get('DB_USERNAME', 'root'),
+        password: configService.get('DB_PASSWORD', ''),
+        database: configService.get('DB_NAME', 'hr-api'),
+        entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
+        synchronize: configService.get('DB_SYNCHRONIZE', true) === 'true',
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],
