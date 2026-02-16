@@ -44,5 +44,11 @@ export class DrepertmentManagerService {
     const department = await this.findOne(id);
     const merged = this.departmentRepository.merge(department, payload);
     return await this.departmentRepository.save(merged);
-  }
+  };
+
+  // remove department
+  async remove(id: number): Promise<void> {
+    const department = await this.findOne(id);
+    await this.departmentRepository.remove(department);
+  };
 }
