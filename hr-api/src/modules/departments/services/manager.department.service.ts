@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from '../entities/department.entity';
 import { Repository } from 'typeorm';
@@ -24,4 +24,17 @@ export class DrepertmentManagerService {
         order: { createAt: 'DESC' },
     });
   };
+
+  // get one depertment
+  async findOne(id: number): Promise<Department> {
+    const department = await this.departmentRepository.findOne({
+        where: { id },
+    });
+
+    if (!department) {
+        throw new NotFoundException(`Department with id ${id} not found`)
+    }
+
+    return department;
+  } 
 }
