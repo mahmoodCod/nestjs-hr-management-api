@@ -5,6 +5,8 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { Role } from 'src/shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 export class AuthService {
   constructor(
@@ -12,6 +14,8 @@ export class AuthService {
     private userRepository: Repository<User>,
     @InjectRepository(RefreshToken)
     private rtRepository: Repository<RefreshToken>,
+    private jwtService: JwtService,
+    private config: ConfigService,
   ) {}
 
   // Registers a new user in the system
@@ -42,5 +46,35 @@ export class AuthService {
       throw new UnauthorizedException('The password entered is not correct');
 
     return user;
+  }
+
+  // Authenticates a user and generates JWT tokens
+  async login(user: User) {
+    const payload = { sub: user.id, role: user.role };
+
+    // access token
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.config.get('JWT_ACCESS_SECRET'),
+      expiresIn: this.config.get('ACCESS_TOKEN_EXPIRES'),
+    });
+
+    // refresh token
+    const refreshToken = this.jwtService.sign(
+      { sub: user.id },
+      {
+        secret: this.config.get('JWT_REFRESH_SECRET'),
+        expiresIn: this.config.get('REFRESH_TOKEN_EXPIRES'),
+      },
+    );
+
+    const tokenHash = await bcrypt.hash(refreshToken, 10);
+    const rt = this.rtRepository.create({ tokenHash, user });
+    await this.rtRepository.save(rt);
+
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
   }
 }
