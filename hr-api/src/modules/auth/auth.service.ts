@@ -122,4 +122,14 @@ export class AuthService {
       }
     }
   }
+
+  // Performs global logout for a user
+  async logout(userId: number) {
+    await this.rtRepository
+      .createQueryBuilder()
+      .update(RefreshToken)
+      .set({ revokedAt: () => 'NOW()' })
+      .where('userId = :id', { id: userId })
+      .execute();
+  }
 }
