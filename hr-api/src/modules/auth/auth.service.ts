@@ -132,4 +132,13 @@ export class AuthService {
       .where('userId = :id', { id: userId })
       .execute();
   }
+
+  // Finds a user by ID or throws NotFoundException if not found
+  async findUserById(userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
+  }
 }
