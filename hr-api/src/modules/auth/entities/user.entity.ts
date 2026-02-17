@@ -1,5 +1,6 @@
 import { Role } from 'src/shared/enums/user-role.enum';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { RefreshToken } from './refresh-token.entity';
 
 @Entity('users')
 export class User {
@@ -14,4 +15,7 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.EMPLOYEE })
   role: Role;
+
+  @OneToMany(() => RefreshToken, (rt) => rt.user)
+  refreshTokens: RefreshToken[];
 }
