@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { Role } from 'src/shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
@@ -55,7 +55,7 @@ export class AuthService {
     // access token
     const accessToken = this.jwtService.sign(payload, {
       secret: this.config.get('JWT_ACCESS_SECRET'),
-      expiresIn: this.config.get('ACCESS_TOKEN_EXPIRES'),
+      expiresIn: this.config.get('ACCESS_TOKEN_EXPIRES') || '15m',
     });
 
     // refresh token
@@ -63,7 +63,7 @@ export class AuthService {
       { sub: user.id },
       {
         secret: this.config.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.config.get('REFRESH_TOKEN_EXPIRES'),
+        expiresIn: this.config.get('REFRESH_TOKEN_EXPIRES') || '14d',
       },
     );
 
@@ -76,5 +76,50 @@ export class AuthService {
       refreshToken,
       user,
     };
+  }
+
+  // Implements secure refresh token rotation strategy
+  async refreshToken(userId: number, providedRefreshToken: string) {
+    const tokens = await this.rtRepository.find({
+      where: { user: { id: userId }, revokedAt: IsNull() },
+      relations: ['user'],
+    });
+
+    for (const rt of tokens) {
+      const match = await bcrypt.compare(providedRefreshToken, rt.tokenHash);
+
+      if (match) {
+        rt.revokedAt = new Date();
+        await this.rtRepository.save(rt);
+
+        const user = rt.user;
+
+        const payload = { sub: user.id, role: user.role };
+
+        // access token
+        const newAccessToken = this.jwtService.sign(payload, {
+          secret: this.config.get('JWT_ACCESS_SECRET'),
+          expiresIn: this.config.get('ACCESS_TOKEN_EXPIRES') || '15m',
+        });
+
+        // refresh token
+        const newRefreshToken = this.jwtService.sign(
+          { sub: user.id },
+          {
+            secret: this.config.get('JWT_REFRESH_SECRET'),
+            expiresIn: this.config.get('REFRESH_TOKEN_EXPIRES') || '14d',
+          },
+        );
+
+        const tokenHash = await bcrypt.hash(newRefreshToken, 10);
+        const refreshToken = this.rtRepository.create({ tokenHash, user });
+        await this.rtRepository.save(refreshToken);
+
+        return {
+          newAccessToken,
+          newRefreshToken,
+        };
+      }
+    }
   }
 }
