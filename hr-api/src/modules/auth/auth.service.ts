@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { IsNull, Repository } from 'typeorm';
@@ -79,7 +81,18 @@ export class AuthService {
   }
 
   // Implements secure refresh token rotation strategy
-  async refreshToken(userId: number, providedRefreshToken: string) {
+  async refreshToken(providedRefreshToken: string) {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(providedRefreshToken, {
+        secret: this.config.get('JWT_REFRESH_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const userId = payload.sub;
+
     const tokens = await this.rtRepository.find({
       where: { user: { id: userId }, revokedAt: IsNull() },
       relations: ['user'],
