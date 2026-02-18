@@ -2,11 +2,42 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 3001);
+
+  // set api global prefix
+  app.setGlobalPrefix('api/v1');
+
+  // enable validation global
+  app.useGlobalPipes();
+
+  // start manager swagger
+  const managerConfig = new DocumentBuilder()
+    .setTitle('Hr api - manager routes')
+    .setDescription(
+      'This root is related to the manager user role and is used in the manager plan.',
+    )
+    .setVersion('1.0')
+    .build();
+
+  const managerDocument = SwaggerModule.createDocument(app, managerConfig, {
+    include: [AppModule],
+    deepScanRoutes: true,
+  });
+
+  if (managerDocument.paths) {
+    Object.keys(managerDocument.paths).forEach((path) => {
+      if (!path.includes('/manager')) {
+        delete managerDocument.paths[path];
+      }
+    });
+  }
+
+  SwaggerModule.setup('api/v1/manager/docs', app, managerDocument);
 
   await app.listen(port);
 }
