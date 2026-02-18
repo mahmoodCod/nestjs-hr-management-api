@@ -9,7 +9,11 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() dto: RegisterDto) {
-    const user = await this.authService.register(dto.mobile, dto.password);
+    const user = await this.authService.register(
+      dto.mobile,
+      dto.password,
+      dto.role,
+    );
 
     return user;
   }
