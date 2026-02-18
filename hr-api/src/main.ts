@@ -37,6 +37,28 @@ async function bootstrap() {
     });
   }
 
+  // start employee swagger
+  const employeeConfig = new DocumentBuilder()
+    .setTitle('Hr api - employee routes')
+    .setDescription(
+      'This root is related to the employee user role and is used in the employee plan.',
+    )
+    .setVersion('1.0')
+    .build();
+
+  const employeeDocument = SwaggerModule.createDocument(app, employeeConfig, {
+    include: [AppModule],
+    deepScanRoutes: true,
+  });
+
+  if (employeeDocument.paths) {
+    Object.keys(employeeDocument.paths).forEach((path) => {
+      if (!path.includes('/employee')) {
+        delete employeeDocument.paths[path];
+      }
+    });
+  }
+  SwaggerModule.setup('api/v1/employee/docs', app, employeeDocument);
   SwaggerModule.setup('api/v1/manager/docs', app, managerDocument);
 
   await app.listen(port);
