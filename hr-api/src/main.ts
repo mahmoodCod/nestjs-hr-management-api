@@ -31,7 +31,7 @@ async function bootstrap() {
 
   if (managerDocument.paths) {
     Object.keys(managerDocument.paths).forEach((path) => {
-      if (!path.includes('/manager')) {
+      if (!path.includes('/manager') && !path.includes('/auth')) {
         delete managerDocument.paths[path];
       }
     });
@@ -53,7 +53,7 @@ async function bootstrap() {
 
   if (employeeDocument.paths) {
     Object.keys(employeeDocument.paths).forEach((path) => {
-      if (!path.includes('/employee')) {
+      if (!path.includes('/employee') && !path.includes('/auth')) {
         delete employeeDocument.paths[path];
       }
     });
