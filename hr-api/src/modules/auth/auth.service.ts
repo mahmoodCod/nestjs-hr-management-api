@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { IsNull, Repository } from 'typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { Role } from 'src/shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
@@ -13,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Repository } from 'typeorm/repository/Repository';
 
 export class AuthService {
   constructor(
@@ -102,10 +102,15 @@ export class AuthService {
 
     const userId = payload.sub;
 
-    const tokens = await this.rtRepository.find({
-      where: { user: { id: userId }, revokedAt: IsNull() },
-      relations: ['user'],
-    });
+    const tokens = await this.rtRepository
+      .createQueryBuilder('rt')
+      .leftJoinAndSelect('rt.user', 'user')
+      .where('rt.userId = :userId', { userId })
+      .andWhere('rt.revokedAt IS NULL')
+      .getMany();
+
+    if (!tokens.length)
+      throw new UnauthorizedException('Your token is not valid');
 
     for (const rt of tokens) {
       const match = await bcrypt.compare(providedRefreshToken, rt.tokenHash);
