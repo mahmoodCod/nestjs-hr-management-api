@@ -4,7 +4,9 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Public } from './decorators/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication system')
 @Public()
 @Controller('auth')
 export class AuthController {
