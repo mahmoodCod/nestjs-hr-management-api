@@ -27,6 +27,7 @@ async function bootstrap() {
       'This root is related to the manager user role and is used in the manager plan.',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const managerDocument = SwaggerModule.createDocument(app, managerConfig, {
