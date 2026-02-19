@@ -6,7 +6,11 @@ import { IsNull, Repository } from 'typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { Role } from 'src/shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -22,6 +26,11 @@ export class AuthService {
 
   // Registers a new user in the system
   async register(mobile: string, password: string, role: Role = Role.EMPLOYEE) {
+    const alreadyEXistMobile = await this.findUserByMobile(mobile);
+
+    if (alreadyEXistMobile)
+      throw new BadRequestException('Mobile already exists');
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = this.userRepository.create({
       mobile,
@@ -151,6 +160,15 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user) throw new NotFoundException('User not found');
+
+    return user;
+  }
+
+  // Finds a user by ID mobile or throws NotFoundException if not found
+  async findUserByMobile(mobile: string) {
+    const user = await this.userRepository.findOne({ where: { mobile } });
+
+    if (!user) return false;
 
     return user;
   }

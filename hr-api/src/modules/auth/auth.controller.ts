@@ -2,6 +2,7 @@ import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,11 +34,11 @@ export class AuthController {
 
   // Validates the provided refresh token and issues new access and refresh tokens.
   @Post('refresh')
-  async refresh(@Body() body: { refreshToken: string }) {
-    if (!body.refreshToken)
+  async refresh(@Body() dto: RefreshTokenDto) {
+    if (!dto.refreshToken)
       throw new UnauthorizedException('Refresh token missing !!');
 
-    const tokens = await this.authService.refreshToken(body.refreshToken);
+    const tokens = await this.authService.refreshToken(dto.refreshToken);
 
     return {
       accessToken: tokens?.newAccessToken,
