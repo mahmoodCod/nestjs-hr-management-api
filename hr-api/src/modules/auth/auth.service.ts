@@ -110,7 +110,7 @@ export class AuthService {
       .getMany();
 
     if (!tokens.length)
-      throw new UnauthorizedException('Your token is not valid');
+      throw new BadRequestException('Your token is not valid');
 
     for (const rt of tokens) {
       const match = await bcrypt.compare(providedRefreshToken, rt.tokenHash);
@@ -148,6 +148,8 @@ export class AuthService {
         };
       }
     }
+
+    throw new UnauthorizedException('Your token is not valid');
   }
 
   // Performs global logout for a user
