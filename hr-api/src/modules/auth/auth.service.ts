@@ -109,13 +109,12 @@ export class AuthService {
       .andWhere('rt.revokedAt IS NULL')
       .getMany();
 
-    if (!tokens.length)
-      throw new BadRequestException('Your token is not valid');
-
+    let isValidRefreshToken = false;
     for (const rt of tokens) {
       const match = await bcrypt.compare(providedRefreshToken, rt.tokenHash);
 
       if (match) {
+        isValidRefreshToken = true;
         rt.revokedAt = new Date();
         await this.rtRepository.save(rt);
 
@@ -149,7 +148,8 @@ export class AuthService {
       }
     }
 
-    throw new UnauthorizedException('Your token is not valid');
+    if (isValidRefreshToken)
+      throw new BadRequestException('Your token is not valid');
   }
 
   // Performs global logout for a user

@@ -14,6 +14,12 @@ async function bootstrap() {
   // set api global prefix
   app.setGlobalPrefix('api/v1');
 
+  // enable cors
+  app.enableCors({
+    origin: true,
+    Credential: true,
+  });
+
   // enable validation global
   app.useGlobalPipes(new ValidationPipe());
 
