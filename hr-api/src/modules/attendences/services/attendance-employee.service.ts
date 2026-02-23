@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Attendance } from '../entities/attendance.entity';
 import { IsNull, Repository } from 'typeorm';
+import { FilterAttendanceDto } from '../dto/filter-attendance.dto';
 
 @Injectable()
 export class AttendanceEmployeeService {
@@ -43,5 +44,28 @@ export class AttendanceEmployeeService {
     }
 
     return await this.attendanceRep.save(attendance);
+  }
+
+  // Retrieves the authenticated user's attendance records optionally filtered by start and end times, ordered by latest check-in
+  async findMyAttendance(userId: number, filters: FilterAttendanceDto) {
+    const queryBuilder = this.attendanceRep
+      .createQueryBuilder('attendance')
+      .where('attendance.user.id = :userId', { userId });
+
+    if (filters.startTime) {
+      queryBuilder.andWhere('attendance.checkInTime >= :startTime', {
+        startTime: filters.startTime,
+      });
+    }
+
+    if (filters.endTime) {
+      queryBuilder.andWhere('attendance.checkOutTime <= :endTime', {
+        endTime: filters.endTime,
+      });
+    }
+
+    return await queryBuilder
+      .orderBy('attendance.checkInTime', 'DESC')
+      .getMany();
   }
 }
