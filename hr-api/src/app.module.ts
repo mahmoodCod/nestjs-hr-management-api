@@ -4,6 +4,11 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DepartmentModule } from './modules/departments/departments.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAurhGuard } from './modules/auth/guards/jwt-auth.guard';
+import { RolesGuard } from './modules/auth/guards/roles.guard';
+import { AttendanceModule } from './modules/attendences/attendances.module';
 
 @Module({
   imports: [
@@ -30,9 +35,21 @@ import { DepartmentModule } from './modules/departments/departments.module';
     }),
 
     // import project module
+    AuthModule,
     DepartmentModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAurhGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}
