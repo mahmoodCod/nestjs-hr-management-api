@@ -21,7 +21,7 @@ export class LoginDto {
     description: 'your password',
     example: 'MahmoodZar1',
   })
-  @IsString({ message: 'Password must be a string' })
+  @IsString({ message: 'Password must be a strings' })
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
 }
