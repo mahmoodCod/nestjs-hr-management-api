@@ -56,6 +56,7 @@ async function bootstrap() {
       'This root is related to the employee user role and is used in the employee plan.',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const employeeDocument = SwaggerModule.createDocument(app, employeeConfig, {
