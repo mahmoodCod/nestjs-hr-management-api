@@ -19,4 +19,12 @@ export class AttendanceEmployeeController {
   ) {
     return await this.attendanceService.checkIn(user.id, dto.notes);
   }
+
+  @Post('check-out')
+  async checkOut(
+    @Body() dto: CheckInOutDto,
+    @User() user: { id: number; role: string },
+  ) {
+    return await this.attendanceService.checkOut(user.id, dto.notes);
+  }
 }
