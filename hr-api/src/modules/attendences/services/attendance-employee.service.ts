@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Attendance } from '../entities/attendance.entity';
 import { IsNull, Repository } from 'typeorm';
@@ -13,6 +17,17 @@ export class AttendanceEmployeeService {
   ) {}
 
   async checkIn(userId: number, notes?: string) {
+    const opened_attendance = await this.attendanceRep.find({
+      where: {
+        user: { id: userId },
+        checkOutTime: IsNull(),
+      },
+    });
+
+    if (opened_attendance.length)
+      throw new BadRequestException(
+        'You have a traffic block that has not registered its exit yet',
+      );
     // eslint-disable-next-line @typescript-eslint/await-thenable
     const attendance = await this.attendanceRep.create({
       user: { id: userId } as any,
