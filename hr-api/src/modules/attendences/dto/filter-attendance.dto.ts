@@ -5,6 +5,8 @@ import { IsDateString, IsOptional } from 'class-validator';
 export class FilterAttendanceDto {
   // start time
   @ApiPropertyOptional({
+    example: '2026-02-24T07:37:43.210Z',
+
     example: '2024-01-01T00:00:00.000Z',
     description: 'start time',
   })
@@ -14,8 +16,11 @@ export class FilterAttendanceDto {
 
   // start end
   @ApiPropertyOptional({
+    example: '2026-02-24T07:37:43.210Z',
+    description: 'end time',
     example: '2024-01-31T00:5959.999Z',
     description: 'start end',
+
   })
   @IsDateString({}, { message: 'The end time format is not correct' })
   @IsOptional()
