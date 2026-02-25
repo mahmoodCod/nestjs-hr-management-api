@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsString, Matches, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches, Min } from 'class-validator';
 
 export class CreatePayrollDto {
   @ApiProperty({
@@ -31,4 +31,24 @@ export class CreatePayrollDto {
   @Min(0, { message: 'Basic rights must be greater than 0' })
   @IsNotEmpty({ message: 'Basic rights is required' })
   baseSalary: number;
+
+  @ApiPropertyOptional({
+    example: 500000,
+    description: 'Bonuses',
+  })
+  @Type(() => Number)
+  @IsNumber({}, { message: 'Bonuses must be a number' })
+  @Min(0, { message: 'Bonuses must be greater than 0' })
+  @IsOptional()
+  bonuses?: number;
+
+  @ApiPropertyOptional({
+    example: 200000,
+    description: 'Deductions',
+  })
+  @Type(() => Number)
+  @IsNumber({}, { message: 'Deductions must be a number' })
+  @Min(0, { message: 'Deductions must be greater than 0' })
+  @IsOptional()
+  deductions?: number;
 }
