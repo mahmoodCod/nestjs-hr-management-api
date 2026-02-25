@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PayrollStatus } from './enums/payroll-status.enum';
+import { PayrollStatus } from '../enums/payroll-status.enum';
 
 @Entity('payrolls')
 export class Payroll {
