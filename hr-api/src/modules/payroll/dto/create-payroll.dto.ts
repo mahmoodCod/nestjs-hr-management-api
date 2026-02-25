@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+  Min,
+} from 'class-validator';
 
 export class CreatePayrollDto {
   @ApiProperty({
@@ -51,4 +58,12 @@ export class CreatePayrollDto {
   @Min(0, { message: 'Deductions must be greater than 0' })
   @IsOptional()
   deductions?: number;
+
+  @ApiPropertyOptional({
+    example: 'Salary payment for the month of December',
+    description: 'Additional notes',
+  })
+  @IsString({ message: 'Notes must be a string' })
+  @IsOptional()
+  notes?: string;
 }
