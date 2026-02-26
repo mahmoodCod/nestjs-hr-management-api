@@ -4,6 +4,7 @@ import { AppModule } from 'src/app.module';
 import { TransformResponseInterceptor } from 'src/common/interceptors/transform-response.interceptor';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import request from 'supertest';
 import { User } from 'src/modules/auth/entities/user.entity';
 import { Role } from 'src/shared/enums/user-role.enum';
 
@@ -50,5 +51,16 @@ describe('attendance (e2e)', () => {
 
       employee = await employeeRepo.save(employee);
     }
+
+    employeeId = employee.id;
+
+    const employeeLoginResponse = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({
+        mobile: employeeMobile,
+        password: employeePassword,
+      });
+
+    employeeToken = employeeLoginResponse.body.data.accessToken;
   });
 });
