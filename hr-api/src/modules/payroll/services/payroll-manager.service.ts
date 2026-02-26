@@ -218,4 +218,38 @@ export class PayrollManagerService {
 
     return payroll;
   }
+
+  /**
+   * Deletes a payroll record by its unique identifier.
+   *
+   * Behavior:
+   * - Validates payroll existence before attempting deletion.
+   * - Reuses findOne() to ensure consistent error handling.
+   * - Removes the entity from the database if found.
+   *
+   * This approach ensures:
+   * - No silent failures when deleting non-existent records
+   * - Centralized validation logic
+   * - Predictable and safe deletion workflow
+   *
+   * @param id Unique identifier of the payroll record
+   * @returns The removed Payroll entity
+   * @throws NotFoundException if payroll does not exist
+   */
+
+  async remove(id: number) {
+    /**
+     * Retrieve payroll using existing validation logic.
+     * Ensures NotFoundException is thrown if entity does not exist.
+     */
+
+    const payroll = await this.findOne(id);
+
+    /**
+     * Perform deletion operation using repository remove method.
+     * Returns the deleted entity for confirmation purposes.
+     */
+
+    return await this.payrollRepo.remove(payroll);
+  }
 }
