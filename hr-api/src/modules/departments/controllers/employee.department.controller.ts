@@ -1,8 +1,8 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { DepartmentsEmployeeService } from '../services/employee.department.service';
 import { Department } from '../entities/department.entity';
-import { Roles } from 'src/modules/auth/decorators/roles.decorator';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { Roles } from '../../../modules/auth/decorators/roles.decorator';
+import { Role } from '../../../shared/enums/user-role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()

@@ -3,7 +3,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { Role } from '../.././shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
 import {
   BadRequestException,

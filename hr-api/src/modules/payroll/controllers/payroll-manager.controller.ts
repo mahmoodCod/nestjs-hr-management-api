@@ -10,8 +10,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Roles } from 'src/modules/auth/decorators/roles.decorator';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { Roles } from '../../../modules/auth/decorators/roles.decorator';
+import { Role } from '../../../shared/enums/user-role.enum';
 import { PayrollManagerService } from '../services/payroll-manager.service';
 import { CreatePayrollDto } from '../dto/create-payroll.dto';
 import { Payroll } from '../entities/payroll.entity';
