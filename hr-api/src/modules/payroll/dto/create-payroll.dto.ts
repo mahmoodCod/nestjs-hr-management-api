@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,6 +9,7 @@ import {
   Matches,
   Min,
 } from 'class-validator';
+import { PayrollStatus } from '../enums/payroll-status.enum';
 
 export class CreatePayrollDto {
   @ApiProperty({
@@ -58,6 +60,17 @@ export class CreatePayrollDto {
   @Min(0, { message: 'Deductions must be greater than 0' })
   @IsOptional()
   deductions?: number;
+
+  @ApiPropertyOptional({
+    example: PayrollStatus.PENDING,
+    description: 'payment date',
+    enum: PayrollStatus,
+  })
+  @IsEnum(PayrollStatus, {
+    message: `The status should be ${PayrollStatus.PENDING} or ${PayrollStatus.PAID}`,
+  })
+  @IsOptional()
+  status?: PayrollStatus;
 
   @ApiPropertyOptional({
     example: 'Salary payment for the month of December',

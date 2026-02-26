@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   Injectable,
@@ -9,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/auth/entities/user.entity';
 import { CreatePayrollDto } from '../dto/create-payroll.dto';
 import { FilterPayrollDto } from '../dto/filter-payroll.dto';
+import { PayrollStatus } from '../enums/payroll-status.enum';
 
 @Injectable()
 export class PayrollManagerService {
@@ -87,6 +89,10 @@ export class PayrollManagerService {
      * Notes are optional and stored as null if not provided.
      */
 
+    let paymentDate;
+    if (dto.status) {
+      if (dto.status === PayrollStatus.PAID) paymentDate = new Date();
+    }
     const payroll = this.payrollRepo.create({
       user,
       salaryPeriod: dto.salaryPeriod,
@@ -94,12 +100,79 @@ export class PayrollManagerService {
       bonuses,
       deduction,
       totalAmount,
+      paymentDate: paymentDate || null,
+      status: dto.status || PayrollStatus.PENDING,
       notes: dto.notes || null,
     });
 
     /**
      * Create payroll entity instance.
      * Notes are optional and stored as null if not provided.
+     */
+
+    return await this.payrollRepo.save(payroll);
+  }
+
+  /**
+   * Updates an existing payroll record.
+   *
+   * Behavior:
+   * - Validates payroll existence before applying updates.
+   * - Supports partial updates for financial and metadata fields.
+   * - Automatically recalculates totalAmount after any financial change.
+   * - If status changes to PAID, assigns paymentDate (if not already set).
+   *
+   * Business Rules:
+   * - totalAmount = baseSalary + bonuses - deduction
+   * - paymentDate is only assigned once when status becomes PAID
+   *
+   * @param id Unique identifier of the payroll record
+   * @param dto Data transfer object containing updated payroll fields
+   * @returns Updated and persisted Payroll entity
+   * @throws NotFoundException if payroll does not exist
+   */
+
+  async update(id: number, dto: CreatePayrollDto) {
+    /**
+     * Ensure the payroll record exists.
+     * Reuses centralized validation logic from findOne().
+     */
+
+    const payroll = await this.findOne(id);
+
+    /**
+     * Apply partial updates only if values are provided.
+     * Preserves existing values when fields are omitted.
+     */
+
+    if (dto.salaryPeriod) payroll.salaryPeriod = dto.salaryPeriod;
+    if (dto.baseSalary) payroll.baseSalary = dto.baseSalary;
+    if (dto.bonuses) payroll.bonuses = dto.bonuses;
+    if (dto.deductions) payroll.deduction = dto.deductions;
+
+    /**
+     * Handle status transition logic.
+     * When payroll is marked as PAID, automatically assign paymentDate
+     * if it has not been previously recorded.
+     */
+
+    if (dto.status) {
+      payroll.status = dto.status;
+      if (dto.status === PayrollStatus.PAID && !payroll.paymentDate) {
+        payroll.paymentDate = new Date();
+      }
+    }
+
+    /**
+     * Recalculate total amount to ensure financial consistency.
+     * Centralizes salary calculation logic in the service layer.
+     */
+
+    payroll.totalAmount =
+      payroll.baseSalary + payroll.bonuses - payroll.deduction;
+
+    /**
+     * Persist updated entity to the database.
      */
 
     return await this.payrollRepo.save(payroll);
