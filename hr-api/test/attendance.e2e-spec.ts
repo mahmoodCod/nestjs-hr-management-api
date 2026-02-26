@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
-import { TransformResponseInterceptor } from 'src/common/interceptors/transform-response.interceptor';
+import { AppModule } from '../src/app.module';
+import { TransformResponseInterceptor } from '../src/common/interceptors/transform-response.interceptor';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import request from 'supertest';
-import { User } from 'src/modules/auth/entities/user.entity';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { User } from '../src/modules/auth/entities/user.entity';
+import { Role } from '../src/shared/enums/user-role.enum';
 
 describe('attendance (e2e)', () => {
   let app: INestApplication;
@@ -62,5 +62,17 @@ describe('attendance (e2e)', () => {
       });
 
     employeeToken = employeeLoginResponse.body.data.accessToken;
+  });
+
+  describe('Employee Attendance', () => {
+    describe('POST /employee/attendance/check-in', () => {
+      it('باید ورود را با موفقیت ثبت کند', () => {
+        return request(app.getHttpServer())
+          .post('/api/v1/employee/attendance/check-in')
+          .set('Authorization', `Bearer ${employeeToken}`)
+          .send({ notes: 'ورود تست' })
+          .expect(201);
+      });
+    });
   });
 });
