@@ -247,8 +247,8 @@ export class PayrollManagerService {
      */
 
     return await queryBuilder
-      .orderBy('payrools.salaryPeriod', 'DESC')
-      .addOrderBy('payrools.createdAt', 'DESC')
+      .orderBy('payrolls.salaryPeriod', 'DESC')
+      .addOrderBy('payrolls.createdAt', 'DESC')
       .getMany();
   }
 

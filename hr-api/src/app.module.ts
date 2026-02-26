@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAurhGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
 import { AttendanceModule } from './modules/attendences/attendances.module';
+import { PayrollModule } from './modules/payroll/payroll.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AttendanceModule } from './modules/attendences/attendances.module';
     AuthModule,
     DepartmentModule,
     AttendanceModule,
+    PayrollModule,
   ],
   controllers: [AppController],
   providers: [
