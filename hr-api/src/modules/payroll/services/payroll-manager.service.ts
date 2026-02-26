@@ -11,6 +11,7 @@ import { User } from 'src/modules/auth/entities/user.entity';
 import { CreatePayrollDto } from '../dto/create-payroll.dto';
 import { FilterPayrollDto } from '../dto/filter-payroll.dto';
 import { PayrollStatus } from '../enums/payroll-status.enum';
+import { UpdatePayrollDto } from '../dto/update-payroll.dto';
 
 @Injectable()
 export class PayrollManagerService {
@@ -132,7 +133,7 @@ export class PayrollManagerService {
    * @throws NotFoundException if payroll does not exist
    */
 
-  async update(id: number, dto: CreatePayrollDto) {
+  async update(id: number, dto: UpdatePayrollDto) {
     /**
      * Ensure the payroll record exists.
      * Reuses centralized validation logic from findOne().
