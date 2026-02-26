@@ -3,6 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
 import { TransformResponseInterceptor } from 'src/common/interceptors/transform-response.interceptor';
 import { DataSource } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { User } from 'src/modules/auth/entities/user.entity';
+import { Role } from 'src/shared/enums/user-role.enum';
 
 describe('attendance (e2e)', () => {
   let app: INestApplication;
@@ -28,5 +31,24 @@ describe('attendance (e2e)', () => {
 
     dataSource = moduleFixture.get<DataSource>(DataSource);
     await app.init();
+
+    const employeeMobile = '09932915475';
+    const employeePassword = 'MahmoodZar1';
+    const hashedPassword = await bcrypt.hash(employeePassword, 10);
+
+    const employeeRepo = dataSource.getRepository(User);
+    let employee = await employeeRepo.findOne({
+      where: { mobile: employeeMobile },
+    });
+
+    if (!employee) {
+      employee = employeeRepo.create({
+        mobile: employeeMobile,
+        password: hashedPassword,
+        role: Role.EMPLOYEE,
+      });
+
+      employee = await employeeRepo.save(employee);
+    }
   });
 });
