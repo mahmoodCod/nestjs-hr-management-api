@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Payroll } from '../entities/payroll.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -172,5 +176,46 @@ export class PayrollManagerService {
       .orderBy('payrools.salaryPeriod', 'DESC')
       .addOrderBy('payrools.createdAt', 'DESC')
       .getMany();
+  }
+
+  /**
+   * Retrieves a single payroll record by its unique identifier.
+   *
+   * Behavior:
+   * - Fetches payroll along with its related user entity.
+   * - Throws a NotFoundException if the record does not exist.
+   *
+   * This method ensures:
+   * - Referential data consistency (user relation is always loaded)
+   * - Proper HTTP-level error handling for missing resources
+   *
+   * @param id Unique identifier of the payroll record
+   * @returns Payroll entity including related user data
+   * @throws NotFoundException if payroll is not found
+   */
+
+  async findOne(id: number) {
+    /**
+     * Attempt to retrieve payroll by primary key.
+     * Explicitly loads the related user entity to avoid lazy-loading issues.
+     */
+
+    const payroll = await this.payrollRepo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    /**
+     * Guard clause: ensure the payroll exists.
+     * Prevents returning null and enforces proper RESTful error semantics.
+     */
+
+    if (!payroll) throw new NotFoundException('Payroll not found');
+
+    /**
+     * Return the fully populated payroll entity.
+     */
+
+    return payroll;
   }
 }
