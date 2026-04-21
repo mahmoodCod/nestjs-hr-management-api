@@ -80,16 +80,25 @@ describe('attendance (e2e)', () => {
           .expect(201);
       });
     });
-  });
-
-  describe('Employee Attendance', () => {
-    describe('POST /employee/attendance/check-out', () => {
-      it('باید ورود را با موفقیت ثبت کند', () => {
-        return request(app.getHttpServer())
+    
+    describe('Employee Attendance', () => {
+      describe('POST /employee/attendance/check-out', () => {
+        it('باید ورود را با موفقیت ثبت کند', () => {
+          return request(app.getHttpServer())
           .post('/api/v1/employee/attendance/check-out')
           .set('Authorization', `Bearer ${employeeToken}`)
           .send({ notes: 'خروج تست' })
           .expect(201);
+        });
+      });
+    });
+    
+    describe('Get/employee/attendance', () => {
+      it('It should return the attendance and absence list of the employee', () => {
+        return request(app.getHttpServer())
+          .get('/api/v1/employee/attendance')
+          .set('Authorization', `Bearer ${employeeToken}`)
+          .expect(200);
       });
     });
   });
