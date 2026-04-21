@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import request from 'supertest';
 import { User } from '../src/modules/auth/entities/user.entity';
 import { Role } from '../src/shared/enums/user-role.enum';
+import { Attendance } from '../src/modules/attendences/entities/attendance.entity';
 
 describe('attendance (e2e)', () => {
   let app: INestApplication;
@@ -62,6 +63,11 @@ describe('attendance (e2e)', () => {
       });
 
     employeeToken = employeeLoginResponse.body.data.accessToken;
+  });
+
+  afterAll(async () => {
+    const attendanceRepo = dataSource.getRepository(Attendance);
+    await attendanceRepo.delete({ user: { id: employeeId } });
   });
 
   describe('Employee Attendance', () => {
