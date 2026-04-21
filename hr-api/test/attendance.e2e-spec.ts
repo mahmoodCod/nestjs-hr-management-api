@@ -12,8 +12,12 @@ import { Attendance } from '../src/modules/attendences/entities/attendance.entit
 describe('attendance (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
+  // employee data
   let employeeToken: string;
   let employeeId: number;
+  //  manager data
+  let managerToken: string;
+  let managerId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -34,13 +38,14 @@ describe('attendance (e2e)', () => {
     dataSource = moduleFixture.get<DataSource>(DataSource);
     await app.init();
 
+    // start create or login employee
     const employeeMobile = '09932915475';
     const employeePassword = 'MahmoodZar1';
     const hashedPassword = await bcrypt.hash(employeePassword, 10);
 
     const employeeRepo = dataSource.getRepository(User);
     let employee = await employeeRepo.findOne({
-      where: { mobile: employeeMobile },
+      where: { mobile: employeeMobile, role: Role.EMPLOYEE },
     });
 
     if (!employee) {
@@ -63,6 +68,37 @@ describe('attendance (e2e)', () => {
       });
 
     employeeToken = employeeLoginResponse.body.data.accessToken;
+
+    // start create or login manger
+
+    const managerMobile = '09932915475';
+    const managerPassword = 'MahmoodZar1';
+    const hashedPasswordM = await bcrypt.hash(employeePassword, 10);
+
+    const managerRepo = dataSource.getRepository(User);
+    let manager = await managerRepo.findOne({
+      where: { mobile: managerMobile, role: Role.MANAGER },
+    });
+
+    if (!manager) {
+      manager = managerRepo.create({
+        mobile: managerMobile,
+        password: hashedPasswordM,
+        role: Role.MANAGER,
+      });
+
+      manager = await managerRepo.save(manager);
+    }
+    managerId = manager.id;
+
+    const managerLoginResponse = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({
+        mobile: managerMobile,
+        password: managerPassword,
+      });
+
+    managerToken = managerLoginResponse.body.data.accessToken;
   });
 
   afterAll(async () => {
