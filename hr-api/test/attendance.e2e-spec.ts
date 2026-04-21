@@ -71,12 +71,24 @@ describe('attendance (e2e)', () => {
   });
 
   describe('Employee Attendance', () => {
-    describe('POST /employee/attendance/check-in', () => {
+    describe('POST /employee/attendance/check-in - check-out', () => {
       it('باید ورود را با موفقیت ثبت کند', () => {
         return request(app.getHttpServer())
           .post('/api/v1/employee/attendance/check-in')
           .set('Authorization', `Bearer ${employeeToken}`)
           .send({ notes: 'ورود تست' })
+          .expect(201);
+      });
+    });
+  });
+
+  describe('Employee Attendance', () => {
+    describe('POST /employee/attendance/check-out', () => {
+      it('باید ورود را با موفقیت ثبت کند', () => {
+        return request(app.getHttpServer())
+          .post('/api/v1/employee/attendance/check-out')
+          .set('Authorization', `Bearer ${employeeToken}`)
+          .send({ notes: 'خروج تست' })
           .expect(201);
       });
     });
