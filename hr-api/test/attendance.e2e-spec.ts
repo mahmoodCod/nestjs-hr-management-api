@@ -30,7 +30,7 @@ describe('attendance (e2e)', () => {
 
     app.enableCors({
       origin: true,
-      Credentials: true,
+      credentials: true,
     });
 
     app.setGlobalPrefix('api/v1');
