@@ -71,9 +71,9 @@ describe('attendance (e2e)', () => {
 
     // start create or login manger
 
-    const managerMobile = '09932915475';
+    const managerMobile = '09932915478';
     const managerPassword = 'MahmoodZar1';
-    const hashedPasswordM = await bcrypt.hash(employeePassword, 10);
+    const hashedPasswordM = await bcrypt.hash(managerPassword, 10);
 
     const managerRepo = dataSource.getRepository(User);
     let manager = await managerRepo.findOne({
@@ -135,6 +135,13 @@ describe('attendance (e2e)', () => {
           .get('/api/v1/employee/attendance')
           .set('Authorization', `Bearer ${employeeToken}`)
           .expect(200);
+      });
+
+      it('It should return the attendance and absence list of the employee', () => {
+        return request(app.getHttpServer())
+          .get('/api/v1/employee/attendance')
+          .set('Authorization', `Bearer ${managerToken}`)
+          .expect(403);
       });
     });
   });
