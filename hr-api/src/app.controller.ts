@@ -1,4 +1,10 @@
-import { Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { Public } from './modules/auth/decorators/public.decorator';
 import {
@@ -43,9 +49,25 @@ export class AppController {
         destination: './uploads',
         filename: (req, file, cb) => {
           const uniqename = `${Date.now()}-${Math.round(Math.random() * 1000)}${extname(file.originalname)}`;
-          cb(null, uniqename)
+          cb(null, uniqename);
         },
       }),
+      limits: {
+        fileSize: 10 * 1024 * 1024,
+      },
+      fileFilter: (req, file, cb) => {
+        const allowFormat = [
+          'images/jpeg',
+          'images/jpg',
+          'images/png',
+          'images/gif',
+        ];
+        if (allowMimes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new BadRequestException('The file type is not allowed'), false);
+        }
+      },
     }),
   )
   upload() {}
