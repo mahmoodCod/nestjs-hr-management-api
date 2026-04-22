@@ -17,14 +17,13 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { exec } from 'child_process';
-import { mkdirSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 
 @Public()
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {
-    if (!exec('./uploads')) {
+    if (!existsSync('./uploads')) {
       mkdirSync('./uploads', { recursive: true });
     }
   }
@@ -65,14 +64,13 @@ export class AppController {
         fileSize: 10 * 1024 * 1024,
       },
       fileFilter: (req, file, cb) => {
-        const allowFormat = [
-          'images/jpeg',
-          'images/jpg',
-          'images/png',
-          'images/gif',
+        const allowMimes = [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
           'application/pdf',
         ];
-        if (allowFormat.includes(file.mimetype)) {
+        if (allowMimes.includes(file.mimetype)) {
           cb(null, true);
         } else {
           cb(new BadRequestException('The file type is not allowed'), false);
@@ -85,7 +83,7 @@ export class AppController {
 
     return {
       filename: file.filename,
-      orginalname: file.orginalname,
+      originalname: file.originalname,
       mimetype: file.mimetype,
       size: file.size,
       path: `/uploads/${file.filename}`,
