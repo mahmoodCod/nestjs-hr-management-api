@@ -16,15 +16,15 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import path, { extname } from 'path';
-import { execSync } from 'child_process';
+import { extname } from 'path';
+import { exec } from 'child_process';
 import { mkdirSync } from 'fs';
 
 @Public()
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {
-    if (!execSync('./uploads')) {
+    if (!exec('./uploads')) {
       mkdirSync('./uploads', { recursive: true });
     }
   }
@@ -34,7 +34,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('upload')
+  @Post('uploads')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload file' })
   @ApiConsumes('multipart/form-data')
@@ -52,9 +52,11 @@ export class AppController {
   })
   @UseInterceptors(
     FileInterceptor('file', {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           const uniqename = `${Date.now()}-${Math.round(Math.random() * 1000)}${extname(file.originalname)}`;
           cb(null, uniqename);
         },
@@ -68,8 +70,9 @@ export class AppController {
           'images/jpg',
           'images/png',
           'images/gif',
+          'application/pdf',
         ];
-        if (allowMimes.includes(file.mimetype)) {
+        if (allowFormat.includes(file.mimetype)) {
           cb(null, true);
         } else {
           cb(new BadRequestException('The file type is not allowed'), false);
