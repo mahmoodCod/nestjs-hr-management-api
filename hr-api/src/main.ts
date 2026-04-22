@@ -5,19 +5,24 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 3001);
 
   // set api global prefix
   app.setGlobalPrefix('api/v1');
 
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
   // enable cors
   app.enableCors({
     origin: true,
-    Credential: true,
+    credentials: true,
   });
 
   // enable validation global
