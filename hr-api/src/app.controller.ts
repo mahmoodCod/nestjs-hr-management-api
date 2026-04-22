@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { AppService } from './app.service';
@@ -15,12 +16,18 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import path, { extname } from 'path';
+import { execSync } from 'child_process';
+import { mkdirSync } from 'fs';
 
 @Public()
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) {
+    if (!execSync('./uploads')) {
+      mkdirSync('./uploads', { recursive: true });
+    }
+  }
 
   @Get()
   getHello(): string {
@@ -70,5 +77,15 @@ export class AppController {
       },
     }),
   )
-  upload() {}
+  upload(@UploadedFile() file: any) {
+    if (!file) throw new BadRequestException('No file has been uploaded');
+
+    return {
+      filename: file.filename,
+      orginalname: file.orginalname,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: `/uploads/${file.filename}`,
+    };
+  }
 }
