@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Public } from './modules/auth/decorators/public.decorator';
 import {
@@ -7,6 +7,9 @@ import {
   ApiConsumes,
   ApiOperation,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Public()
 @Controller()
@@ -34,5 +37,16 @@ export class AppController {
       },
     },
   })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqename = `${Date.now()}-${Math.round(Math.random() * 1000)}${extname(file.originalname)}`;
+          cb(null, uniqename)
+        },
+      }),
+    }),
+  )
   upload() {}
 }
