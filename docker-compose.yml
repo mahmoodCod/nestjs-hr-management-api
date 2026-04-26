@@ -1,0 +1,23 @@
+services:
+ api:
+  build: .
+  container_name: hr-managment-api
+  ports:
+   - "3000:3000"
+  env_file:
+   - .env
+  depends_on:
+   - mysql
+  restart: always
+ mysql:
+  image: mysql:9
+  container_name: mysql
+  environment:
+   MYSQL_DB: 'hr-managment'
+   MYSQL_USER: mahmood
+   MYSQL_PASSWORD: 123456
+  volums:
+   - pgdata:/var/lib/mysql/data
+  ports:
+   - "3306:3306"
+  restart: always
