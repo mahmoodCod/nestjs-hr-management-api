@@ -304,6 +304,3 @@ npm run test:cov
 ---
 
 ## License
-
-This project is currently private/internal.  
-Define and add a license file before public distribution.
