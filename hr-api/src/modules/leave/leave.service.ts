@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLeaveDto } from './dto/create-leave.dto';
-import { UpdateLeaveDto } from './dto/update-leave.dto';
+import { CreateLeaveDto } from './dto/create-leave.request.dto';
+import { UpdateLeaveDto } from './dto/update-leave.request.dto';
 
 @Injectable()
 export class LeaveService {
