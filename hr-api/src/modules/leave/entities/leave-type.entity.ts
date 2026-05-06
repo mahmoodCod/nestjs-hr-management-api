@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { LeaveRequest } from './leave-request.entity';
 
 @Entity('leave_types')
 export class LeaveType {
