@@ -16,12 +16,14 @@ export class LeaveRequest {
   @PrimaryGeneratedColumn()
   id: number;
 
+  // user association
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
   user: User;
   @Column({ name: 'userId' })
   userId: number;
 
+  // leave type association
   @ManyToOne(() => LeaveType)
   @JoinColumn({ name: 'leave_typeId' })
   leaveType: LeaveType;
@@ -34,6 +36,7 @@ export class LeaveRequest {
   @Column({ name: 'end_date', type: 'date' })
   endDate: Date;
 
+  // duration days
   @Column({
     name: 'duration_days',
     type: 'decimal',
@@ -46,6 +49,7 @@ export class LeaveRequest {
   @Column({ type: 'text', nullable: true })
   reason: string;
 
+  // status
   @Column({
     type: 'enum',
     enum: LeaveRequestStatusEnum,
