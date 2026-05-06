@@ -1,15 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { LeaveService } from './leave.service';
-import { CreateLeaveDto, CreateLeaveRequestDto } from './dto/create-leave.request.dto';
-import { UpdateLeaveDto } from './dto/update-leave.request.dto';
+import { CreateLeaveRequestDto } from './dto/create-leave.request.dto';
+import { UpdateLeaveRequestDto } from './dto/update-leave.request.dto';
 
 @Controller('leave')
 export class LeaveController {
   constructor(private readonly leaveService: LeaveService) {}
 
   @Post()
-  create(@Body() createLeaveDto: CreateLeaveDto) {
-    return this.leaveService.create(CreateLeaveRequestDto);
+  create(@Body() createLeaveRequestDto: CreateLeaveRequestDto) {
+    return this.leaveService.create(createLeaveRequestDto);
   }
 
   @Get()
@@ -23,8 +31,11 @@ export class LeaveController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLeaveDto: UpdateLeaveDto) {
-    return this.leaveService.update(+id, updateLeaveDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateLeaveRequestDto: UpdateLeaveRequestDto,
+  ) {
+    return this.leaveService.update(+id, updateLeaveRequestDto);
   }
 
   @Delete(':id')
