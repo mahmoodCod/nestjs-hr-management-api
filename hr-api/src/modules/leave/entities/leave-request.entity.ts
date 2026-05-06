@@ -9,24 +9,23 @@ import {
 } from 'typeorm';
 import { LeaveType } from './leave-type.entity';
 import { LeaveRequestStatusEnum } from 'src/shared/enums/leave-request.enum';
+import { User } from 'src/modules/auth/entities/user.entity';
 
 @Entity('leave_requests')
 export class LeaveRequest {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // Association with the requesting employee (assuming you have an Employee Entity)
-  @ManyToOne(() => Employee)
-  @JoinColumn({ name: 'employee_id' })
-  employee: Employee;
-  @Column({ name: 'employee_id' })
-  employeeId: number;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+  @Column({ name: 'userId' })
+  userId: number;
 
-  // Association with the leave type
   @ManyToOne(() => LeaveType)
-  @JoinColumn({ name: 'leave_type_id' })
+  @JoinColumn({ name: 'leave_typeId' })
   leaveType: LeaveType;
-  @Column({ name: 'leave_type_id' })
+  @Column({ name: 'leave_typeId' })
   leaveTypeId: number;
 
   @Column({ name: 'start_date', type: 'date' })
@@ -42,7 +41,7 @@ export class LeaveRequest {
     scale: 1,
     nullable: true,
   })
-  durationDays: number; // Number of working days (can be calculated automatically)
+  durationDays: number;
 
   @Column({ type: 'text', nullable: true })
   reason: string;
@@ -54,15 +53,15 @@ export class LeaveRequest {
   })
   status: LeaveRequestStatusEnum;
 
-  @Column({ name: 'approved_by', nullable: true })
-  approvedBy: number; // ID of the approving employee (manager)
+  @Column({ name: 'approvedBy', nullable: true })
+  approvedBy: number;
 
-  @Column({ name: 'approved_at', type: 'datetime', nullable: true })
+  @Column({ name: 'approvedAt', type: 'datetime', nullable: true })
   approvedAt: Date;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updatedAt' })
   updatedAt: Date;
 }
