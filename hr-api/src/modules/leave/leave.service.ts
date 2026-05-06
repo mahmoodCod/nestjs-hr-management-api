@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLeaveDto } from './dto/create-leave.request.dto';
-import { UpdateLeaveDto } from './dto/update-leave.request.dto';
+import { CreateLeaveRequestDto } from './dto/create-leave.request.dto';
+import { UpdateLeaveRequestDto } from './dto/update-leave.request.dto';
 
 @Injectable()
 export class LeaveService {
-  create(createLeaveDto: CreateLeaveDto) {
+  create(createLeaveRequestDto: CreateLeaveRequestDto) {
     return 'This action adds a new leave';
   }
 
@@ -16,7 +16,7 @@ export class LeaveService {
     return `This action returns a #${id} leave`;
   }
 
-  update(id: number, updateLeaveDto: UpdateLeaveDto) {
+  update(id: number, updateLeaveRequestDto: UpdateLeaveRequestDto) {
     return `This action updates a #${id} leave`;
   }
 

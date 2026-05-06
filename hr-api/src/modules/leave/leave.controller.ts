@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { LeaveService } from './leave.service';
-import { CreateLeaveDto } from './dto/create-leave.request.dto';
+import { CreateLeaveDto, CreateLeaveRequestDto } from './dto/create-leave.request.dto';
 import { UpdateLeaveDto } from './dto/update-leave.request.dto';
 
 @Controller('leave')
@@ -9,7 +9,7 @@ export class LeaveController {
 
   @Post()
   create(@Body() createLeaveDto: CreateLeaveDto) {
-    return this.leaveService.create(createLeaveDto);
+    return this.leaveService.create(CreateLeaveRequestDto);
   }
 
   @Get()
