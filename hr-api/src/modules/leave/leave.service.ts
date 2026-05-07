@@ -59,11 +59,20 @@ export class LeaveService {
       );
   }
 
+  // A list of requests from a specific user
   async findAllForUser(userId: number) {
     return await this.leaveRequestRepo.find({
       where: { userId },
       order: { createdAt: 'DESC' },
       relations: ['LeaveType'], // To display the name of the leave type
+    });
+  }
+
+  // List of requests from all users
+  async findAllForManager() {
+    return await this.leaveRequestRepo.find({
+      order: { createdAt: 'DESC' },
+      relations: ['LeaveType', 'user'], // Information of the requesting user
     });
   }
 
