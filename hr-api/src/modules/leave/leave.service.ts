@@ -38,6 +38,8 @@ export class LeaveService {
     }
 
     // Calculate the number of days (including both days)
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const durationdays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   }
 
   findAll() {
