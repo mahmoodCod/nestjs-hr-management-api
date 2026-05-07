@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -12,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { LeaveService } from '../services/leave.service';
 import { CreateLeaveRequestDto } from '../dto/create-leave.request.dto';
-import { UpdateLeaveRequestDto } from '../dto/update-leave.request.dto';
 import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('employee_leave')
@@ -39,8 +37,9 @@ export class EmployeeLeaveController {
     return this.leaveService.getBalance(userId, targetYear);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.leaveService.remove(+id);
+  @Delete(':id/cancel')
+  cancel(@Param('id') id: string, @Req() req) {
+    const userId = req.user.userId;
+    return this.leaveService.cancelRequest(+id, userId);
   }
 }
