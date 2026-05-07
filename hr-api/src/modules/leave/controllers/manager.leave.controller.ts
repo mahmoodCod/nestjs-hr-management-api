@@ -14,8 +14,10 @@ import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
 import { Role } from 'src/shared/enums/user-role.enum';
 import { Roles } from 'src/modules/auth/decorators/roles.decorator';
 import { UpdateLeaveRequestDto } from '../dto/update-leave.request.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
-@Controller('manager_leave')
+@ApiBearerAuth()
+@Controller('manager/leave')
 @UseGuards(JwtAurhGuard, RolesGuard)
 @Roles(Role.MANAGER)
 export class ManagerLeaveController {

@@ -12,8 +12,13 @@ import {
 import { LeaveService } from '../services/leave.service';
 import { CreateLeaveRequestDto } from '../dto/create-leave.request.dto';
 import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
+import { Roles } from 'src/modules/auth/decorators/roles.decorator';
+import { Role } from 'src/shared/enums/user-role.enum';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
-@Controller('employee_leave')
+@ApiBearerAuth()
+@Controller('employee/leave')
+@Roles(Role.EMPLOYEE)
 @UseGuards(JwtAurhGuard)
 export class EmployeeLeaveController {
   constructor(private readonly leaveService: LeaveService) {}
