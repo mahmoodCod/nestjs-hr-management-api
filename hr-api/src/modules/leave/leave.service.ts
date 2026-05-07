@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLeaveRequestDto } from './dto/create-leave.request.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave.request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,7 +28,16 @@ export class LeaveService {
 
     const startDate = new Date(createLeaveRequestDto.startDate);
     const endDate = new Date(createLeaveRequestDto.endDate);
-    
+
+    if (startDate > endDate)
+      throw new BadRequestException(
+        'The start date cannot be greater than the end date',
+      );
+    if (startDate < new Date()) {
+      throw new BadRequestException('the start date cannot be in the past');
+    }
+
+    // Calculate the number of days (including both days)
   }
 
   findAll() {
