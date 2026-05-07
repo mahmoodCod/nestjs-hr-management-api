@@ -121,7 +121,8 @@ export class LeaveService {
     return await this.leaveRequestRepo.save(request);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} leave`;
+  async remove(id: number) {
+    const request = await this.findOne(id);
+    return await this.leaveRequestRepo.remove(request);
   }
 }
