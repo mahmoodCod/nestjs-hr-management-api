@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { LeaveService } from '../services/leave.service';
 import { CreateLeaveRequestDto } from '../dto/create-leave.request.dto';
@@ -20,27 +21,22 @@ export class EmployeeLeaveController {
   constructor(private readonly leaveService: LeaveService) {}
 
   @Post('request')
-  create(@Req() @Body() createLeaveRequestDto: CreateLeaveRequestDto) {
-    const userId = Req.user.userId;
+  create(@Req() req, @Body() createLeaveRequestDto: CreateLeaveRequestDto) {
+    const userId = req.user.userId;
     return this.leaveService.create(userId, createLeaveRequestDto);
   }
 
-  @Get()
-  findAll() {
-    return this.leaveService.findAll();
+  @Get('requests')
+  findAllForUser(@Req() req) {
+    const userId = req.user.userId;
+    return this.leaveService.findAllForUser(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.leaveService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateLeaveRequestDto: UpdateLeaveRequestDto,
-  ) {
-    return this.leaveService.update(+id, updateLeaveRequestDto);
+  @Get('balance')
+  getBalance(@Req() req, @Query('year') year: number) {
+    const userId = req.user.userId;
+    const targetYear = year || new Date().getFullYear();
+    return this.leaveService.getBalance(userId, targetYear);
   }
 
   @Delete(':id')
