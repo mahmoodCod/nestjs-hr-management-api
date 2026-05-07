@@ -76,8 +76,15 @@ export class LeaveService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} leave`;
+  async findOne(id: number) {
+    const request = await this.leaveRequestRepo.findOne({
+      where: { id },
+      relations: ['LeaveType', 'user'],
+    });
+
+    if (!request) throw new NotFoundException('Leave request not found');
+
+    return request;
   }
 
   update(id: number, updateLeaveRequestDto: UpdateLeaveRequestDto) {
