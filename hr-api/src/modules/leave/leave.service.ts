@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -102,6 +103,21 @@ export class LeaveService {
     request.status = updateLeaveRequestDto.status;
     request.approvedBy = approverId;
     request.approvedAt = new Date();
+    return await this.leaveRequestRepo.save(request);
+  }
+
+  // Canceling the request by the employee herself (only in pending status)
+  async cancelRequest(id: number, userId: number) {
+    const request = await this.findOne(id);
+    if (request.userId !== userId) {
+      throw new ForbiddenException(
+        'You are not allowed to cancel this request.',
+      );
+    }
+    if (request.status !== LeaveRequestStatusEnum.PENDING) {
+      throw new BadRequestException('Only pending requests can be canceled');
+    }
+    request.status = LeaveRequestStatusEnum.CANCELLED;
     return await this.leaveRequestRepo.save(request);
   }
 
