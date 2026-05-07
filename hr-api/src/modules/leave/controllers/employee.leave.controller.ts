@@ -6,18 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
-import { LeaveService } from './leave.service';
-import { CreateLeaveRequestDto } from './dto/create-leave.request.dto';
-import { UpdateLeaveRequestDto } from './dto/update-leave.request.dto';
+import { LeaveService } from '../services/leave.service';
+import { CreateLeaveRequestDto } from '../dto/create-leave.request.dto';
+import { UpdateLeaveRequestDto } from '../dto/update-leave.request.dto';
+import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
 
-@Controller('leave')
-export class LeaveController {
+@Controller('employee_leave')
+@UseGuards(JwtAurhGuard)
+export class EmployeeLeaveController {
   constructor(private readonly leaveService: LeaveService) {}
 
-  @Post()
-  create(@Body() createLeaveRequestDto: CreateLeaveRequestDto) {
-    return this.leaveService.create(createLeaveRequestDto);
+  @Post('request')
+  create(@Req() @Body() createLeaveRequestDto: CreateLeaveRequestDto) {
+    const userId = Req.user.userId;
+    return this.leaveService.create(userId, createLeaveRequestDto);
   }
 
   @Get()

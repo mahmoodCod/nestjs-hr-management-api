@@ -4,13 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateLeaveRequestDto } from './dto/create-leave.request.dto';
-import { UpdateLeaveRequestDto } from './dto/update-leave.request.dto';
+import { CreateLeaveRequestDto } from '../dto/create-leave.request.dto';
+import { UpdateLeaveRequestDto } from '../dto/update-leave.request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LeaveRequest } from './entities/leave-request.entity';
+import { LeaveRequest } from '../entities/leave-request.entity';
 import { Between, In, Repository } from 'typeorm';
-import { LeaveType } from './entities/leave-type.entity';
-import { LeaveRequestStatusEnum } from 'src/shared/enums/leave-request.enum';
+import { LeaveType } from '../entities/leave-type.entity';
+import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
 
 @Injectable()
 export class LeaveService {
