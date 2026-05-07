@@ -59,7 +59,7 @@ export class LeaveService {
         'Leave request conflicts with another request',
       );
 
-    // بررسی موجودی سالانه – در صورت نیاز می‌توانی پیاده‌سازی کنی
+    // Annual inventory check – you can implement if needed
     const newRequest = this.leaveRequestRepo.create({
       userId,
       leaveTypeId: createLeaveRequestDto.leaveTypeId,
