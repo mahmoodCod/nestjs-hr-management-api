@@ -124,23 +124,31 @@ export class LeaveService {
   // Calculation of the user's leave balance in a given year
   async getBalance(userId: number, year: number) {
     const leaveTypes = await this.leaveTypeRepo.find();
-    const balances = [];
+    const balances: {
+      leaveTypeId: number;
+      name: string;
+      daysPerYear: number;
+      usedDays: number;
+      remaining: number | null;
+      isUnlimited: boolean;
+    }[] = [];
+
+    // Construction of the beginning and end of the year
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year, 11, 31, 23, 59, 59);
 
     for (const type of leaveTypes) {
-      const usedResult = await this.leaveRequestRepo
-        .createQueryBuilder('leave')
-        .select('SUM(leave.durationDays)', 'total')
-        .where('leave.userId = :userId', { userId })
-        .andWhere('leave.leaveTypeId = :typeId', { typeId: type.id })
-        .andWhere('leave.status = :status', {
+      // Calculation of the total number of days used this year for this type of leave (only APPROVED)
+      const usedDays =
+        (await this.leaveRequestRepo.sum('durationDays', {
+          userId,
+          leaveTypeId: type.id,
           status: LeaveRequestStatusEnum.APPROVED,
-        });
-        .andWhere('YEAR(leave.startDate) = :year', { year })
-        .getRawOne();
+          startDate: Between(startOfYear, endOfYear),
+        })) || 0;
 
-      const usedDays = Number(usedResult?.total) || 0;
       const remaining =
-        type.daysPerYear === 0 ? null : type.daysPerYear - usedDays; // If it is 0, it means unlimited
+        type.daysPerYear === 0 ? null : type.daysPerYear - usedDays;
 
       balances.push({
         leaveTypeId: type.id,
@@ -153,7 +161,6 @@ export class LeaveService {
     }
     return balances;
   }
-
   async remove(id: number) {
     const request = await this.findOne(id);
     return await this.leaveRequestRepo.remove(request);
