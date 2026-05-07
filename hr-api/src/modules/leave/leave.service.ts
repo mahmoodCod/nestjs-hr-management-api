@@ -121,6 +121,39 @@ export class LeaveService {
     return await this.leaveRequestRepo.save(request);
   }
 
+  // Calculation of the user's leave balance in a given year
+  async getBalance(userId: number, year: number) {
+    const leaveTypes = await this.leaveTypeRepo.find();
+    const balances = [];
+
+    for (const type of leaveTypes) {
+      const usedResult = await this.leaveRequestRepo
+        .createQueryBuilder('leave')
+        .select('SUM(leave.durationDays)', 'total')
+        .where('leave.userId = :userId', { userId })
+        .andWhere('leave.leaveTypeId = :typeId', { typeId: type.id })
+        .andWhere('leave.status = :status', {
+          status: LeaveRequestStatusEnum.APPROVED,
+        });
+        .andWhere('YEAR(leave.startDate) = :year', { year })
+        .getRawOne();
+
+      const usedDays = Number(usedResult?.total) || 0;
+      const remaining =
+        type.daysPerYear === 0 ? null : type.daysPerYear - usedDays; // If it is 0, it means unlimited
+
+      balances.push({
+        leaveTypeId: type.id,
+        name: type.name,
+        daysPerYear: type.daysPerYear,
+        usedDays,
+        remaining: remaining !== null ? Math.max(0, remaining) : null,
+        isUnlimited: type.daysPerYear === 0,
+      });
+    }
+    return balances;
+  }
+
   async remove(id: number) {
     const request = await this.findOne(id);
     return await this.leaveRequestRepo.remove(request);
