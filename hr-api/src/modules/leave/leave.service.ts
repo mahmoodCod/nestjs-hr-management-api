@@ -41,7 +41,7 @@ export class LeaveService {
 
     // Calculate the number of days (including both days)
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const durationdays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    const durationDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
     // Checking the interference with previous requests (Pending or Approved)
     const overLapping = await this.leaveRequestRepo.findOne({
@@ -58,6 +58,19 @@ export class LeaveService {
       throw new BadRequestException(
         'Leave request conflicts with another request',
       );
+
+    // بررسی موجودی سالانه – در صورت نیاز می‌توانی پیاده‌سازی کنی
+    const newRequest = this.leaveRequestRepo.create({
+      userId,
+      leaveTypeId: createLeaveRequestDto.leaveTypeId,
+      startDate,
+      endDate,
+      durationDays,
+      reason: createLeaveRequestDto.reason,
+      status: LeaveRequestStatusEnum.PENDING,
+    });
+
+    return await this.leaveRequestRepo.save(newRequest);
   }
 
   // A list of requests from a specific user
