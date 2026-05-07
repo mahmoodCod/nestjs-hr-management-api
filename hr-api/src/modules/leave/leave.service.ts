@@ -7,8 +7,9 @@ import { CreateLeaveRequestDto } from './dto/create-leave.request.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave.request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeaveRequest } from './entities/leave-request.entity';
-import { Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { LeaveType } from './entities/leave-type.entity';
+import { LeaveRequestStatusEnum } from 'src/shared/enums/leave-request.enum';
 
 @Injectable()
 export class LeaveService {
@@ -40,6 +41,18 @@ export class LeaveService {
     // Calculate the number of days (including both days)
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
     const durationdays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    // Checking the interference with previous requests (Pending or Approved)
+    const overLapping = await this.leaveRequestRepo.findOne({
+      where: {
+        userId,
+        status: In([
+          LeaveRequestStatusEnum.PENDING,
+          LeaveRequestStatusEnum.APPROVED,
+        ]),
+        startDate: Between(startDate, endDate),
+      },
+    });
   }
 
   findAll() {
