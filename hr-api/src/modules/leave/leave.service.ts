@@ -87,8 +87,22 @@ export class LeaveService {
     return request;
   }
 
-  update(id: number, updateLeaveRequestDto: UpdateLeaveRequestDto) {
-    return `This action updates a #${id} leave`;
+  // Update the status of the request (approved/rejected) by the administrator
+  async updateStatus(
+    id: number,
+    updateLeaveRequestDto: UpdateLeaveRequestDto,
+    approverId: number,
+  ) {
+    const request = await this.findOne(id);
+    if (request.status !== LeaveRequestStatusEnum.PENDING) {
+      throw new BadRequestException(
+        'Only requests in "pending" status can be changed.',
+      );
+    }
+    request.status = updateLeaveRequestDto.status;
+    request.approvedBy = approverId;
+    request.approvedAt = new Date();
+    return await this.leaveRequestRepo.save(request);
   }
 
   remove(id: number) {
