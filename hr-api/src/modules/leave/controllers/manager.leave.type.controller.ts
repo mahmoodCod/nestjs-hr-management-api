@@ -15,7 +15,9 @@ import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
 import { Role } from 'src/shared/enums/user-role.enum';
 import { Roles } from 'src/modules/auth/decorators/roles.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('manager/leave-types')
 @UseGuards(JwtAurhGuard, RolesGuard)
 @Roles(Role.MANAGER)
