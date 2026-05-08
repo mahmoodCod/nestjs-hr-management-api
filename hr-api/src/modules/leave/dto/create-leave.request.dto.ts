@@ -10,7 +10,7 @@ import {
 export class CreateLeaveRequestDto {
   @ApiProperty({
     example: 1,
-    description: 'شناسه نوع مرخصی (از جدول leave_types)',
+    description: 'ID of the leave type (from the leave_types table)',
   })
   @IsInt()
   @IsNotEmpty()
@@ -18,7 +18,7 @@ export class CreateLeaveRequestDto {
 
   @ApiProperty({
     example: '2026-05-10',
-    description: 'تاریخ شروع مرخصی (فرمت YYYY-MM-DD)',
+    description: 'Leave start date (YYYY-MM-DD format)',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -26,15 +26,15 @@ export class CreateLeaveRequestDto {
 
   @ApiProperty({
     example: '2026-05-15',
-    description: 'تاریخ پایان مرخصی (فرمت YYYY-MM-DD)',
+    description: 'Leave end date (YYYY-MM-DD format)',
   })
   @IsDateString()
   @IsNotEmpty()
   endDate: string;
 
   @ApiPropertyOptional({
-    example: 'مسافرت کاری',
-    description: 'توضیحات دلخواه برای درخواست مرخصی',
+    example: 'business trip',
+    description: 'Optional description for leave request',
   })
   @IsString()
   @IsOptional()
