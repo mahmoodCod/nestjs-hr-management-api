@@ -47,4 +47,8 @@ export class EmployeeLeaveController {
     const userId = req.user.userId;
     return this.leaveService.cancelRequest(+id, userId);
   }
+  @Get('leave-types')
+  async getLeaveTypes() {
+    return this.leaveService.findAllLeaveTypes();
+  }
 }
