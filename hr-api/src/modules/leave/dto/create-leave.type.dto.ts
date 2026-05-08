@@ -9,14 +9,14 @@ import {
 } from 'class-validator';
 
 export class CreateLeaveTypeDto {
-  @ApiProperty({ example: 'مرخصی استحقاقی', description: 'نام نوع مرخصی' })
+  @ApiProperty({ example: 'paid leave', description: 'Leave type name' })
   @IsString()
   @MaxLength(50)
   name: string;
 
   @ApiProperty({
     example: 26,
-    description: 'تعداد روز مجاز در سال (0 برای نامحدود)',
+    description: 'Number of days allowed per year (0 for unlimited)',
   })
   @IsInt()
   @Min(0)
@@ -24,13 +24,16 @@ export class CreateLeaveTypeDto {
 
   @ApiPropertyOptional({
     example: true,
-    description: 'نیاز به تأیید مدیر دارد؟',
+    description: 'Need admin approval?',
   })
   @IsBoolean()
   @IsOptional()
   requiresApproval?: boolean;
 
-  @ApiPropertyOptional({ example: '#4CAF50', description: 'کد رنگ برای نمایش' })
+  @ApiPropertyOptional({
+    example: '#4CAF50',
+    description: 'Color code for display',
+  })
   @IsString()
   @IsOptional()
   colorCode?: string;
