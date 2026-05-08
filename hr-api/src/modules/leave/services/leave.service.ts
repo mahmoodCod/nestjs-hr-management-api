@@ -123,7 +123,7 @@ export class LeaveService {
     return await this.leaveRequestRepo.find({
       where: { userId },
       order: { createdAt: 'DESC' },
-      relations: ['LeaveType'], // To display the name of the leave type
+      relations: ['leaveType'], // To display the name of the leave type
     });
   }
 
@@ -131,14 +131,14 @@ export class LeaveService {
   async findAllForManager() {
     return await this.leaveRequestRepo.find({
       order: { createdAt: 'DESC' },
-      relations: ['LeaveType', 'user'], // Information of the requesting user
+      relations: ['leaveType', 'user'], // Information of the requesting user
     });
   }
 
   async findOne(id: number) {
     const request = await this.leaveRequestRepo.findOne({
       where: { id },
-      relations: ['LeaveType', 'user'],
+      relations: ['leaveType', 'user'],
     });
 
     if (!request) throw new NotFoundException('Leave request not found');
