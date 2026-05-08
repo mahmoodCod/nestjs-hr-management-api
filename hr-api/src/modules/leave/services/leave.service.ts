@@ -11,6 +11,8 @@ import { LeaveRequest } from '../entities/leave-request.entity';
 import { Between, In, Repository } from 'typeorm';
 import { LeaveType } from '../entities/leave-type.entity';
 import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
+import { CreateLeaveTypeDto } from '../dto/create-leave.type.dto';
+import { UpdateLeaveTypeDto } from '../dto/update-leave.type.dto';
 
 @Injectable()
 export class LeaveService {
@@ -20,6 +22,49 @@ export class LeaveService {
     @InjectRepository(LeaveType)
     private leaveTypeRepo: Repository<LeaveType>,
   ) {}
+
+  // ================ LeaveType CRUD (for manager) ================
+
+  async createLeaveType(dto: CreateLeaveTypeDto) {
+    const existing = await this.leaveTypeRepo.findOne({
+      where: { name: dto.name },
+    });
+    if (existing)
+      throw new BadRequestException(
+        'The leave type with this name has already been registered',
+      );
+    const leaveType = this.leaveTypeRepo.create(dto);
+    return await this.leaveTypeRepo.save(leaveType);
+  }
+
+  async findAllLeaveTypes() {
+    return await this.leaveTypeRepo.find();
+  }
+
+  async findOneLeaveType(id: number) {
+    const leaveType = await this.leaveTypeRepo.findOne({ where: { id } });
+    if (!leaveType) throw new NotFoundException('Leave type not found');
+    return leaveType;
+  }
+
+  async updateLeaveType(id: number, dto: UpdateLeaveTypeDto) {
+    const leaveType = await this.findOneLeaveType(id);
+    Object.assign(leaveType, dto);
+    return await this.leaveTypeRepo.save(leaveType);
+  }
+  async deleteLeaveType(id: number) {
+    const leaveType = await this.findOneLeaveType(id);
+    // Check if there is a leave request with this type? Otherwise, it can be deleted.
+    const count = await this.leaveRequestRepo.count({
+      where: { leaveTypeId: id },
+    });
+    if (count > 0) {
+      throw new BadRequestException(
+        'It is not possible to delete the leave type because requests have been registered with it',
+      );
+    }
+    return await this.leaveTypeRepo.remove(leaveType);
+  }
   // craete new leave request
   async create(userId: number, createLeaveRequestDto: CreateLeaveRequestDto) {
     // Checking the type of leave
