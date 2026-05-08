@@ -7,7 +7,7 @@ export class UpdateLeaveRequestDto extends PartialType(CreateLeaveRequestDto) {
   @ApiProperty({
     enum: LeaveRequestStatusEnum,
     example: LeaveRequestStatusEnum.APPROVED,
-    description: 'وضعیت جدید (approved یا rejected)',
+    description: 'new status (approved or rejected)',
   })
   @IsEnum(LeaveRequestStatusEnum)
   status: LeaveRequestStatusEnum;
@@ -15,7 +15,7 @@ export class UpdateLeaveRequestDto extends PartialType(CreateLeaveRequestDto) {
   @ApiPropertyOptional({
     example: 5,
     description:
-      'شناسه کاربر تأییدکننده (در صورت نیاز، معمولاً از توکن گرفته می‌شود)',
+      'Authenticating user ID (if needed, usually taken from the token)',
   })
   @IsOptional()
   @IsInt()
