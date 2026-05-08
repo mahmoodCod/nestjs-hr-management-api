@@ -10,6 +10,7 @@ import { JwtAurhGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
 import { AttendanceModule } from './modules/attendences/attendances.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
+import { LeaveModule } from './modules/leave/leave.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { PayrollModule } from './modules/payroll/payroll.module';
     DepartmentModule,
     AttendanceModule,
     PayrollModule,
+    LeaveModule,
   ],
   controllers: [AppController],
   providers: [
