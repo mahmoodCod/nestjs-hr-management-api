@@ -25,26 +25,26 @@ export class EmployeeLeaveController {
 
   @Post('request')
   create(@Req() req, @Body() createLeaveRequestDto: CreateLeaveRequestDto) {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     return this.leaveService.create(userId, createLeaveRequestDto);
   }
 
   @Get('requests')
   findAllForUser(@Req() req) {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     return this.leaveService.findAllForUser(userId);
   }
 
   @Get('balance')
   getBalance(@Req() req, @Query('year') year: number) {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const targetYear = year || new Date().getFullYear();
     return this.leaveService.getBalance(userId, targetYear);
   }
 
   @Delete(':id/cancel')
   cancel(@Param('id') id: string, @Req() req) {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     return this.leaveService.cancelRequest(+id, userId);
   }
   @Get('leave-types')
