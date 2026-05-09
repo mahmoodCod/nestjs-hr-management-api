@@ -56,8 +56,19 @@ export class NotificationService {
     return notification;
   }
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
+  /**
+   * Mark a specific notification as read (only if it belongs to the user)
+   * param id - notification ID
+   * param userId - user ID for ownership check
+   * returns updated notification
+   */
+  async markAsRead(id: number, userId: number) {
+    const notification = await this.findOne(id);
+    if (notification.userId !== userId) {
+      throw new NotFoundException('Notification not found for this user');
+    }
+    notification.isRead = true;
+    return await this.notificationRepo.save(notification);
   }
 
   remove(id: number) {
