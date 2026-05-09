@@ -68,6 +68,17 @@ This API is structured from day one to support growth:
   - Employee check-in / check-out flow
   - Attendance retrieval scenarios
 
+- **Leave Domain**
+  - Employee leave request creation, cancellation, and balance tracking
+  - Manager-side request review and status updates (approve/reject)
+  - Manager CRUD for leave types and yearly limits
+
+- **Notification Domain**
+  - Employee-scoped notification inbox endpoints
+  - Mark-single and mark-all-as-read workflows
+  - Manager-side system-wide notification listing
+  - Leave workflow integration for request-created and status-changed alerts
+
 - **File Upload Pipeline**
   - Multipart upload endpoint
   - MIME and size validation
@@ -109,6 +120,10 @@ src/
       controllers, dto, entities, services
     attendences/
       ...
+    leave/
+      controllers, dto, entities, enums, services
+    notification/
+      controllers, dto, entities, enums, services
   shared/
     enums/
 test/
@@ -204,6 +219,14 @@ After startup, Swagger docs are available at:
 - **Employee docs:** `http://localhost:<PORT>/api/v1/employee/docs`
 
 These docs are filtered by route segments and include shared auth endpoints where configured.
+
+### Key Route Groups
+
+- **Employee Leave:** `/api/v1/employee/leave/*`
+- **Manager Leave:** `/api/v1/manager/leave/*`
+- **Manager Leave Types:** `/api/v1/manager/leave-types/*`
+- **Employee Notifications:** `/api/v1/employee/notifications/*`
+- **Manager Notifications:** `/api/v1/manager/notifications`
 
 ---
 
@@ -304,3 +327,6 @@ npm run test:cov
 ---
 
 ## License
+
+This project is currently private/internal.  
+Define and add a license file before public distribution.
