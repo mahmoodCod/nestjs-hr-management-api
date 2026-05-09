@@ -32,7 +32,7 @@ export class NotificationService {
    * param unreadOnly - if true, returns only unread notifications
    * returns array of notifications sorted by newest first
    */
-  async findAll(userId: number, unreadOnly?: boolean) {
+  async findAllForUser(userId: number, unreadOnly?: boolean) {
     const where: any = { userId };
     if (unreadOnly) where.isRead = false;
 

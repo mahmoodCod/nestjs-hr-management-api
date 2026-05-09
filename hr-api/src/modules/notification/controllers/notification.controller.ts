@@ -13,8 +13,8 @@ export class NotificationController {
   }
 
   @Get()
-  findAll() {
-    return this.notificationService.findAll();
+  findAllForUser() {
+    return this.notificationService.findAllForUser();
   }
 
   @Get(':id')
