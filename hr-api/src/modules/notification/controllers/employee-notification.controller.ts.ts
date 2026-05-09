@@ -1,16 +1,15 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Param,
   Delete,
   UseGuards,
   Req,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { NotificationService } from '../services/notification.service';
-import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/modules/auth/decorators/roles.decorator';
 import { Role } from 'src/shared/enums/user-role.enum';
@@ -39,9 +38,14 @@ export class NotificationController {
     return this.notificationService.findAllForUser(userId, unreadOnly);
   }
 
-  @Get()
-  findAllForUser(userId: number) {
-    return this.notificationService.findAllForUser(userId);
+  /**
+   * Mark a single notification as read.
+   * param id - notification ID
+   */
+  @Patch(':id/read')
+  async markAsRead(@Param('id') id: string, @Req() req) {
+    const userId = req.user.id;
+    return this.notificationService.markAsRead(+id, userId);
   }
 
   @Get(':id')
