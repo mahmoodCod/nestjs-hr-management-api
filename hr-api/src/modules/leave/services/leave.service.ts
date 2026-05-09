@@ -13,6 +13,8 @@ import { LeaveType } from '../entities/leave-type.entity';
 import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
 import { CreateLeaveTypeDto } from '../dto/create-leave.type.dto';
 import { UpdateLeaveTypeDto } from '../dto/update-leave.type.dto';
+import { NotificationService } from 'src/modules/notification/services/notification.service';
+import { NotificationType } from 'src/modules/notification/enums/notification.type.enum';
 
 @Injectable()
 export class LeaveService {
@@ -21,6 +23,8 @@ export class LeaveService {
     private leaveRequestRepo: Repository<LeaveRequest>,
     @InjectRepository(LeaveType)
     private leaveTypeRepo: Repository<LeaveType>,
+    // 🔔 Inject NotificationService
+    private notificationService: NotificationService,
   ) {}
 
   // ================ LeaveType CRUD (for manager) ================
@@ -115,7 +119,18 @@ export class LeaveService {
       status: LeaveRequestStatusEnum.PENDING,
     });
 
-    return await this.leaveRequestRepo.save(newRequest);
+    const savedRequest = await this.leaveRequestRepo.save(newRequest);
+    // 🔔 NOTIFICATION: Notify manager (temporary managerId = 1 – you should replace with dynamic logic)
+    const managerId = 1; // TODO: fetch actual manager from department or user hierarchy
+    await this.notificationService.create({
+      userId: managerId,
+      title: 'New leave request',
+      message: `User ${userId} requested leave from ${startDate.toDateString()} to ${endDate.toDateString()}`,
+      type: NotificationType.LEAVE_REQUEST_CREATED,
+      relatedEntityId: savedRequest.id,
+      relatedEntityType: 'leave_request',
+    });
+    return savedRequest;
   }
 
   // A list of requests from a specific user
