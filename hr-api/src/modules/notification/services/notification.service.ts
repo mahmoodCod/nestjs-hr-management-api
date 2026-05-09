@@ -97,6 +97,14 @@ export class NotificationService {
   }
 
   /**
+   * Get all notifications from all users (admin only)
+   */
+  async findAllForAllUsers() {
+    return await this.notificationRepo.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+  /**
    * Helper method to create a leave‑related notification
    * param userId - recipient user ID
    * param title - notification title
