@@ -3,6 +3,7 @@ import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { Notification } from '../entities/notification.entity';
+import { NotificationType } from '../enums/notification.type.enum';
 
 /**
  * Notification management service
@@ -93,5 +94,30 @@ export class NotificationService {
       throw new NotFoundException('Notification not found for this user');
     }
     return await this.notificationRepo.remove(notification);
+  }
+
+  /**
+   * Helper method to create a leave‑related notification
+   * param userId - recipient user ID
+   * param title - notification title
+   * param message - notification message
+   * param type - notification type (from NotificationType enum)
+   * param relatedEntityId - optional leave request ID
+   */
+  async createLeaveNotification(
+    userId: number,
+    title: string,
+    message: string,
+    type: NotificationType,
+    relatedEntityId?: number,
+  ) {
+    return this.create({
+      userId,
+      title,
+      message,
+      type,
+      relatedEntityId,
+      relatedEntityType: 'leave_request',
+    });
   }
 }
