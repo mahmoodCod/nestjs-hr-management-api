@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
-import { UpdateNotificationDto } from '../dto/update-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { Notification } from '../entities/notification.entity';
@@ -83,7 +82,16 @@ export class NotificationService {
     return { message: 'All notifications marked as read' };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+  /**
+   * Delete a notification (only if it belongs to the user)
+   * param id - notification ID
+   * param userId - user ID for ownership check
+   */
+  async remove(id: number, userId: number) {
+    const notification = await this.findOne(id);
+    if (notification.userId !== userId) {
+      throw new NotFoundException('Notification not found for this user');
+    }
+    return await this.notificationRepo.remove(notification);
   }
 }
