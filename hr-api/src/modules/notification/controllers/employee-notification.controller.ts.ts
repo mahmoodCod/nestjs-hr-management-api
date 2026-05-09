@@ -1,8 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { NotificationService } from '../services/notification.service';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
+import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
-@Controller('notification')
+/**
+ * Employee Notification Controller
+ * All routes are prefixed with /employee/notifications and protected by JWT.
+ */
+@Controller('employee/notifications')
+@UseGuards(JwtAurhGuard)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
