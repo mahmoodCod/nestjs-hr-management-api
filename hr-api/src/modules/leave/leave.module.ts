@@ -6,9 +6,13 @@ import { LeaveRequest } from './entities/leave-request.entity';
 import { LeaveType } from './entities/leave-type.entity';
 import { ManagerLeaveController } from './controllers/manager.leave.controller';
 import { ManagerLeaveTypeController } from './controllers/manager.leave.type.controller';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LeaveRequest, LeaveType])],
+  imports: [
+    TypeOrmModule.forFeature([LeaveRequest, LeaveType]),
+    NotificationModule,
+  ],
   controllers: [
     EmployeeLeaveController,
     ManagerLeaveController,
