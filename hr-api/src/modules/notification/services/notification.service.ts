@@ -3,6 +3,7 @@ import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { UpdateNotificationDto } from '../dto/update-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Notification } from '../entities/notification.entity';
 
 /**
  * Notification management service
@@ -14,8 +15,15 @@ export class NotificationService {
     @InjectRepository(Notification)
     private notificationRepo: Repository<Notification>,
   ) {}
-  create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
+
+  /**
+   * ایجاد یک اعلان جدید
+   * @param dto - داده‌های اعلان (userId, title, message, type و ...)
+   * @returns اعلان ذخیره شده
+   */
+  async create(createNotificationDto: CreateNotificationDto) {
+    const notification = this.notificationRepo.create(createNotificationDto);
+    return await this.notificationRepo.save(notification);
   }
 
   findAll() {
