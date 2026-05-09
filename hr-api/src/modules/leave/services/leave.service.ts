@@ -176,7 +176,28 @@ export class LeaveService {
     request.status = updateLeaveRequestDto.status;
     request.approvedBy = approverId;
     request.approvedAt = new Date();
-    return await this.leaveRequestRepo.save(request);
+    const updatedRequest = await this.leaveRequestRepo.save(request);
+
+    // 🔔 NOTIFICATION: Notify the employee about status change
+    const title =
+      updatedRequest.status === LeaveRequestStatusEnum.APPROVED
+        ? 'Leave approved'
+        : 'Leave rejected';
+    const message =
+      updatedRequest.status === LeaveRequestStatusEnum.APPROVED
+        ? `Your leave request from ${updatedRequest.startDate.toDateString()} has been approved.`
+        : `Your leave request from ${updatedRequest.startDate.toDateString()} has been rejected.`;
+
+    await this.notificationService.create({
+      userId: updatedRequest.userId,
+      title,
+      message,
+      type: NotificationType.LEAVE_STATUS_CHANGED,
+      relatedEntityId: updatedRequest.id,
+      relatedEntityType: 'leave_request',
+    });
+
+    return updatedRequest;
   }
 
   // Canceling the request by the employee herself (only in pending status)
