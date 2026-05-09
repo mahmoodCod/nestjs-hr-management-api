@@ -71,6 +71,18 @@ export class NotificationService {
     return await this.notificationRepo.save(notification);
   }
 
+  /**
+   * Mark all unread notifications of a user as read
+   * param userId - user ID
+   */
+  async markAllAsRead(userId: number) {
+    await this.notificationRepo.update(
+      { userId, isRead: false },
+      { isRead: true },
+    );
+    return { message: 'All notifications marked as read' };
+  }
+
   remove(id: number) {
     return `This action removes a #${id} notification`;
   }
