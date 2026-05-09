@@ -48,13 +48,22 @@ export class NotificationController {
     return this.notificationService.markAsRead(+id, userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationService.findOne(+id);
+  /**
+   * Mark all unread notifications of the employee as read.
+   */
+  @Patch('read-all')
+  async markAllAsRead(@Req() req) {
+    const userId = req.user.id;
+    return this.notificationService.markAllAsRead(userId);
   }
 
+  /**
+   * Delete a notification.
+   * @param id - notification ID
+   */
   @Delete(':id')
-  remove(@Param('id') id: string, userId: number) {
+  async remove(@Param('id') id: string, @Req() req) {
+    const userId = req.user.id;
     return this.notificationService.remove(+id, userId);
   }
 }
