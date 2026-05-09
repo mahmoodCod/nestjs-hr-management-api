@@ -1,9 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { UpdateNotificationDto } from '../dto/update-notification.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
+/**
+ * Notification management service
+ * Task: Create, search, mark as read, and delete notifications
+ */
 @Injectable()
 export class NotificationService {
+  constructor(
+    @InjectRepository(Notification)
+    private notificationRepo: Repository<Notification>,
+  ) {}
   create(createNotificationDto: CreateNotificationDto) {
     return 'This action adds a new notification';
   }
