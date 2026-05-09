@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { UpdateNotificationDto } from '../dto/update-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Notification } from '../entities/notification.entity';
 
 /**
@@ -17,17 +17,29 @@ export class NotificationService {
   ) {}
 
   /**
-   * ایجاد یک اعلان جدید
-   * @param dto - داده‌های اعلان (userId, title, message, type و ...)
-   * @returns اعلان ذخیره شده
+   * Create a new notification
+   * param dto - notification data (userId, title, message, type, etc.)
+   * returns saved notification entity
    */
   async create(createNotificationDto: CreateNotificationDto) {
     const notification = this.notificationRepo.create(createNotificationDto);
     return await this.notificationRepo.save(notification);
   }
 
-  findAll() {
-    return `This action returns all notification`;
+  /**
+   * Get all notifications for a specific user
+   * param userId - user ID
+   * param unreadOnly - if true, returns only unread notifications
+   * returns array of notifications sorted by newest first
+   */
+  async findAll(userId: number, unreadOnly?: boolean) {
+    const where: any = { userId };
+    if (unreadOnly) where.isRead = false;
+
+    return await this.notificationRepo.find({
+      where: where as FindOptionsWhere<Notification>,
+      order: { createdAt: 'DESC' },
+    });
   }
 
   findOne(id: number) {
