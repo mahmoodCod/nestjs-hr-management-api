@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { UpdateNotificationDto } from '../dto/update-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -42,8 +42,18 @@ export class NotificationService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
+  /**
+   * Find a single notification by ID
+   * param id - notification ID
+   * returns notification entity
+   * throws NotFoundException if notification does not exist
+   */
+  async findOne(id: number) {
+    const notification = await this.notificationRepo.findOne({ where: { id } });
+
+    if (!notification) throw new NotFoundException('Notification not found');
+
+    return notification;
   }
 
   update(id: number, updateNotificationDto: UpdateNotificationDto) {
