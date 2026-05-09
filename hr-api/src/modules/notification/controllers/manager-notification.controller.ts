@@ -4,11 +4,13 @@ import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
 import { NotificationService } from '../services/notification.service';
 import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { Role } from 'src/shared/enums/user-role.enum';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 /**
  * Manager Notification Controller
  * Allows managers to view all notifications across the system.
  */
+@ApiBearerAuth()
 @Controller('manager/notifications')
 @UseGuards(JwtAurhGuard, RolesGuard)
 @Roles(Role.MANAGER)
