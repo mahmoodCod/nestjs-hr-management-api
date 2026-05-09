@@ -23,7 +23,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('employee/notifications')
 @UseGuards(JwtAurhGuard)
 @Roles(Role.EMPLOYEE)
-export class NotificationController {
+export class EmployeeNotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   /**
