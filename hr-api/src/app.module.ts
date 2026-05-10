@@ -12,6 +12,7 @@ import { AttendanceModule } from './modules/attendences/attendances.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
 import { LeaveModule } from './modules/leave/leave.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     PayrollModule,
     LeaveModule,
     NotificationModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [
