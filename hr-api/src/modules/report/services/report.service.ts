@@ -49,7 +49,7 @@ export class ReportService {
       relations: ['leaveType'],
       order: { startDate: 'ASC' },
     });
-    return this.buildLeaveExcel(leaves);
+    return this.buildLeaveExcel(leaves, false);
   }
 
   /**
@@ -88,6 +88,14 @@ export class ReportService {
       const deptUserIds = usersInDept.map((u) => u.id);
       where.userId = In(deptUserIds.filter((id) => userIds.includes(id)));
     }
+
+    const leaves = await this.leaveRequestRepo.find({
+      where,
+      relations: ['leaveType', 'user'],
+      order: { startDate: 'ASC' },
+    });
+
+    return this.buildLeaveExcel(leaves, true);
   }
   findAll() {
     return `This action returns all report`;
