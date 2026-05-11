@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
@@ -52,6 +52,19 @@ export class ReportService {
     return this.buildLeaveExcel(leaves);
   }
 
+  /**
+   * Generate leave report for a manager (all subordinates, optional department filter)
+   * param managerId - Manager's user ID
+   * param dto - Filter options (dates, leave type, department)
+   * returns Excel file buffer
+   */
+  async generateLeaveReportForManager(managerId: number, dto: CreateReportDto): Promise<Buffer> {
+    // Find subordinates (users whose managerId equals managerId)
+    const subordinates = await this.userRepo.find({ where: { managerId } });
+    const userIds = subordinates.map(u => u.id);
+    if (userIds.length === 0) {
+      throw new BadRequestException('You have no subordinates.');
+    }
   findAll() {
     return `This action returns all report`;
   }
