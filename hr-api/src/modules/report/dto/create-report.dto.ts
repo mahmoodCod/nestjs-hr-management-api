@@ -1,7 +1,7 @@
 import { IsOptional, IsDateString, IsInt } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class ReportDto {
+export class CreateReportDto {
   @ApiPropertyOptional({
     example: '2026-01-01',
     description: 'start date(YYYY-MM-DD)',
