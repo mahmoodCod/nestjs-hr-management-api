@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -7,6 +8,7 @@ import {
 } from 'typeorm';
 import { PerformanceCycle } from './performance-cycle.entity';
 import { User } from 'src/modules/auth/entities/user.entity';
+import { EvaluationStatus } from '../enums/evaluation-status.enum';
 
 /**
  * PerformanceEvaluation entity
@@ -37,4 +39,26 @@ export class PerformanceEvaluation {
   reviewer: User;
   @Column({ name: 'reviewer_id' })
   reviewerId: number;
+
+  @Column({
+    name: 'final_score',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
+  finalScore: number; // Calculated weighted average (0-100)
+
+  @Column({
+    type: 'enum',
+    enum: EvaluationStatus,
+    default: EvaluationStatus.DRAFT,
+  })
+  status: EvaluationStatus;
+
+  @Column({ type: 'text', nullable: true })
+  comments: string; // Overall comments from reviewer
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }
