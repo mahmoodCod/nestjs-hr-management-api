@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
+import { CycleStatus } from '../enums/cycle-status.enum';
 
 /**
  * DTO for creating a new performance cycle
@@ -22,4 +23,9 @@ export class CreatePerformanceCycleDto {
   @ApiProperty({ example: '2026-03-31', description: 'End date (YYYY-MM-DD)' })
   @IsDateString()
   endDate: string;
+
+  @ApiPropertyOptional({ enum: CycleStatus, example: CycleStatus.DRAFT })
+  @IsEnum(CycleStatus)
+  @IsOptional()
+  status?: CycleStatus;
 }
