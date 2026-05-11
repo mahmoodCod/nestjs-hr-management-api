@@ -3,12 +3,14 @@ import { ReportService } from '../services/report.service';
 import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { Response } from 'express';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 /**
  * Employee Report Controller
  * All routes require JWT authentication.
  * Base path: /employee/report
  */
+@ApiBearerAuth()
 @Controller('employee/report')
 @UseGuards(JwtAurhGuard)
 export class EmployeeReportController {

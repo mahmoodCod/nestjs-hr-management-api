@@ -6,12 +6,14 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../../shared/enums/user-role.enum';
 import { Response } from 'express';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 /**
  * Manager Report Controller
  * All routes require JWT authentication and MANAGER role.
  * Base path: /manager/report
  */
+@ApiBearerAuth()
 @Controller('manager/report')
 @UseGuards(JwtAurhGuard, RolesGuard)
 @Roles(Role.MANAGER)
