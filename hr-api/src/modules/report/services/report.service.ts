@@ -22,8 +22,6 @@ export class ReportService {
     private leaveTypeRepo: Repository<LeaveType>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
-    @InjectRepository(ReportLog)
-    private reportLogRepo: Repository<ReportLog>,
   ) {}
 
   /**
@@ -141,10 +139,5 @@ export class ReportService {
 
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer as any;
-  }
-
-  async logReport(userId: number, reportType: ReportType, filters: any) {
-    const log = this.reportLogRepo.create({ userId, reportType, filters });
-    await this.reportLogRepo.save(log);
   }
 }
