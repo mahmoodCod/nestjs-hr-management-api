@@ -127,6 +127,25 @@ export class ReportService {
       columns.splice(1, 0, { header: 'User Name', key: 'userName', width: 20 });
     }
     worksheet.columns = columns;
+
+    // Fill rows
+    let rowIndex = 1;
+    for (const leave of leaves) {
+      const row: any = {
+        row: rowIndex,
+        leaveType: leave.leaveType?.name || 'Unknown',
+        startDate: leave.startDate.toLocaleDateString('en-US'),
+        endDate: leave.endDate.toLocaleDateString('en-US'),
+        duration: leave.durationDays,
+        status: leave.status,
+        reason: leave.reason || '---',
+      };
+      if (includeUserInfo) {
+        row.userName = leave.user?.username || leave.userId.toString();
+      }
+      worksheet.addRow(row);
+      rowIndex++;
+    }
   }
   findAll() {
     return `This action returns all report`;
