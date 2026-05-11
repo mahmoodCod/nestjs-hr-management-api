@@ -37,8 +37,8 @@ export class ReportService {
 
     if (createReportDto.startDate && createReportDto.endDate) {
       where.startDate = Between(
-        new Date(CreateReportDto.startDate),
-        new Date(CreateReportDto.endDate),
+        new Date(createReportDto.startDate),
+        new Date(createReportDto.endDate),
       );
     }
     if (createReportDto.leaveTypeId) {
