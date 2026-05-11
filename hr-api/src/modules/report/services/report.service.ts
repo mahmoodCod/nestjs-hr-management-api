@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReportDto } from '../dto/create-report.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
 import { User } from 'src/modules/auth/entities/user.entity';
+import { CreateReportDto } from '../dto/create-report.dto';
 
+/**
+ * Service responsible for generating reports (Excel files)
+ * Uses data from Leave, Attendance, and User modules
+ */
 @Injectable()
 export class ReportService {
   constructor(
@@ -17,8 +21,37 @@ export class ReportService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
   ) {}
-  create(createReportDto: CreateReportDto) {
-    return 'This action adds a new report';
+
+  /**
+   * Generate leave report for a single employee (self)
+   * param userId - Employee's user ID
+   * param dto - Filter options (dates, leave type)
+   * returns Excel file buffer
+   */
+  async generateLeaveReportForEmployee(
+    userId: number,
+    createReportDto: CreateReportDto,
+  ): Promise<Buffer> {
+    // Build query conditions
+    const where: any = { userId };
+
+    if (createReportDto.startDate && createReportDto.endDate) {
+      where.startDate = Between(
+        new Date(CreateReportDto.startDate),
+        new Date(CreateReportDto.endDate),
+      );
+    }
+    if (createReportDto.leaveTypeId) {
+      where.leaveTypeId = createReportDto.leaveTypeId;
+    }
+
+    const leaves = await this.leaveRequestRepo.find({
+      where,
+      relations: ['leaveType'],
+      order: { startDate: 'ASC' },
+    });
+
+    return this.buildLeaveExcel(leaves, false);
   }
 
   findAll() {
