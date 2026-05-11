@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
-import { Between, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
 import { User } from 'src/modules/auth/entities/user.entity';
 import { CreateReportDto } from '../dto/create-report.dto';
@@ -58,13 +58,29 @@ export class ReportService {
    * param dto - Filter options (dates, leave type, department)
    * returns Excel file buffer
    */
-  async generateLeaveReportForManager(managerId: number, dto: CreateReportDto): Promise<Buffer> {
+  async generateLeaveReportForManager(
+    managerId: number,
+    createReportDto: CreateReportDto,
+  ): Promise<Buffer> {
     // Find subordinates (users whose managerId equals managerId)
     const subordinates = await this.userRepo.find({ where: { managerId } });
-    const userIds = subordinates.map(u => u.id);
+    const userIds = subordinates.map((u) => u.id);
     if (userIds.length === 0) {
       throw new BadRequestException('You have no subordinates.');
     }
+
+    const where: any = { userId: In(userIds) };
+
+    if (createReportDto.startDate && createReportDto.endDate) {
+      where.startDate = Between(
+        new Date(createReportDto.startDate),
+        new Date(createReportDto.endDate),
+      );
+    }
+    if (createReportDto.leaveTypeId) {
+      where.leaveTypeId = createReportDto.leaveTypeId;
+    }
+  }
   findAll() {
     return `This action returns all report`;
   }
