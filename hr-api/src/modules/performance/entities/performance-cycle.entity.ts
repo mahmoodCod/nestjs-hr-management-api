@@ -38,6 +38,6 @@ export class PerformanceCycle {
   @OneToMany(() => PerformanceKpi, (kpi) => kpi.cycle, { cascade: true })
   kpis: PerformanceKpi[];
 
-  @OneToMany(() => PerformanceEvaluation, (eval) => eval.cycle)
+  @OneToMany(() => PerformanceEvaluation, (evalu) => evalu.cycle)
   evaluations: PerformanceEvaluation[];
 }
