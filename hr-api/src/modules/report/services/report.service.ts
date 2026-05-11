@@ -112,23 +112,7 @@ export class ReportService {
     const workbook = new ExcelJS.workbook();
     const worksheet = workbook.addWorksheet('Leave Report');
 
-    // Define columns
-    const columns: any[] = [
-      { header: 'Row', key: 'row', width: 8 },
-      { header: 'Leave Type', key: 'leaveType', width: 20 },
-      { header: 'Start Date', key: 'startDate', width: 15 },
-      { header: 'End Date', key: 'endDate', width: 15 },
-      { header: 'Duration (days)', key: 'duration', width: 12 },
-      { header: 'Status', key: 'status', width: 15 },
-      { header: 'Reason', key: 'reason', width: 30 },
-    ];
-
-    if (includeUserInfo) {
-      columns.splice(1, 0, { header: 'User Name', key: 'userName', width: 20 });
-    }
-    worksheet.columns = columns;
-
-    // Fill rows
+    // Add rows
     let rowIndex = 1;
     for (const leave of leaves) {
       const row: any = {
@@ -147,14 +131,7 @@ export class ReportService {
       rowIndex++;
     }
 
-    // Style header row
-    worksheet.getRow(1).font = { bold: true };
-    worksheet.getRow(1).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFD3D3D3' },
-    };
-
+    // No styling applied – just return the buffer
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer as Buffer;
   }
