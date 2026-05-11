@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePerformanceDto } from './dto/create-performance.dto';
-import { UpdatePerformanceDto } from './dto/update-performance.dto';
+import { CreatePerformanceDto } from '../dto/create-performance.dto';
+import { UpdatePerformanceDto } from '../dto/update-performance.dto';
 
 @Injectable()
 export class PerformanceService {
