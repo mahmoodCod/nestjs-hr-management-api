@@ -13,6 +13,7 @@ import { CreateReportDto } from '../dto/create-report.dto';
  */
 @Injectable()
 export class ReportService {
+  buildLeaveExcel: any;
   constructor(
     @InjectRepository(LeaveRequest)
     private leaveRequestRepo: Repository<LeaveRequest>,
@@ -34,7 +35,6 @@ export class ReportService {
   ): Promise<Buffer> {
     // Build query conditions
     const where: any = { userId };
-
     if (createReportDto.startDate && createReportDto.endDate) {
       where.startDate = Between(
         new Date(createReportDto.startDate),
@@ -44,14 +44,12 @@ export class ReportService {
     if (createReportDto.leaveTypeId) {
       where.leaveTypeId = createReportDto.leaveTypeId;
     }
-
     const leaves = await this.leaveRequestRepo.find({
       where,
       relations: ['leaveType'],
       order: { startDate: 'ASC' },
     });
-
-    return this.buildLeaveExcel(leaves, false);
+    return this.buildLeaveExcel(leaves);
   }
 
   findAll() {
