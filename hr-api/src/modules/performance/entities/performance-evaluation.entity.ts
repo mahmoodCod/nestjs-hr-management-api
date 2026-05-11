@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PerformanceCycle } from './performance-cycle.entity';
+import { User } from 'src/modules/auth/entities/user.entity';
 
 /**
  * PerformanceEvaluation entity
@@ -22,4 +23,18 @@ export class PerformanceEvaluation {
   cycle: PerformanceCycle;
   @Column({ name: 'cycle_id' })
   cycleId: number;
+
+  // The employee being evaluated
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'employee_id' })
+  employee: User;
+  @Column({ name: 'employee_id' })
+  employeeId: number;
+
+  // The manager/reviewer who performed the evaluation
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'reviewer_id' })
+  reviewer: User;
+  @Column({ name: 'reviewer_id' })
+  reviewerId: number;
 }
