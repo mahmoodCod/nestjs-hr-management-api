@@ -111,6 +111,22 @@ export class ReportService {
   ): Promise<Buffer> {
     const workbook = new ExcelJS.workbook();
     const worksheet = workbook.addWorksheet('Leave Report');
+
+    // Define columns
+    const columns: any[] = [
+      { header: 'Row', key: 'row', width: 8 },
+      { header: 'Leave Type', key: 'leaveType', width: 20 },
+      { header: 'Start Date', key: 'startDate', width: 15 },
+      { header: 'End Date', key: 'endDate', width: 15 },
+      { header: 'Duration (days)', key: 'duration', width: 12 },
+      { header: 'Status', key: 'status', width: 15 },
+      { header: 'Reason', key: 'reason', width: 30 },
+    ];
+
+    if (includeUserInfo) {
+      columns.splice(1, 0, { header: 'User Name', key: 'userName', width: 20 });
+    }
+    worksheet.columns = columns;
   }
   findAll() {
     return `This action returns all report`;
