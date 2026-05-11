@@ -61,9 +61,9 @@ export class ReportService {
   async generateLeaveReportForManager(
     managerId: number,
     createReportDto: CreateReportDto,
-  ): Promise<Buffer> {
+  ) {
     // Find subordinates (users whose managerId equals managerId)
-    const subordinates = await this.userRepo.find({ where: { managerId } });
+    const subordinates = await this.userRepo.find({ where: { id: managerId } });
     const userIds = subordinates.map((u) => u.id);
     if (userIds.length === 0) {
       throw new BadRequestException('You have no subordinates.');
@@ -79,6 +79,14 @@ export class ReportService {
     }
     if (createReportDto.leaveTypeId) {
       where.leaveTypeId = createReportDto.leaveTypeId;
+    }
+    // Optional department filter
+    if (createReportDto.departmentId) {
+      const usersInDept = await this.userRepo.find({
+        where: { id: createReportDto.departmentId },
+      });
+      const deptUserIds = usersInDept.map((u) => u.id);
+      where.userId = In(deptUserIds.filter((id) => userIds.includes(id)));
     }
   }
   findAll() {
