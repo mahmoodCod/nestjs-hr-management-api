@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreatePerformanceDto } from './create-performance.dto';
+import { CreatePerformanceDto } from './create-performance-cycle.dto';
 
 export class UpdatePerformanceDto extends PartialType(CreatePerformanceDto) {}

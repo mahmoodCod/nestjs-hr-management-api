@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { PerformanceService } from '../services/performance.service';
-import { CreatePerformanceDto } from '../dto/create-performance.dto';
+import { CreatePerformanceDto } from '../dto/create-performance-cycle.dto';
 import { UpdatePerformanceDto } from '../dto/update-performance.dto';
 
 @Controller('performance')
