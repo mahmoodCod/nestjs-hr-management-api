@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CycleStatus } from '../enums/cycle-status.enum';
 
 /**
  * PerformanceCycle entity
@@ -18,4 +25,17 @@ export class PerformanceCycle {
 
   @Column({ type: 'date' })
   endDate: Date;
+
+  @Column({ type: 'enum', enum: CycleStatus, default: CycleStatus.DRAFT })
+  status: CycleStatus;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  // Relations
+  @OneToMany(() => Kpi, (kpi) => kpi.cycle, { cascade: true })
+  kpis: Kpi[];
+
+  @OneToMany(() => PerformanceEvaluation, (eval) => eval.cycle)
+  evaluations: PerformanceEvaluation[];
 }
