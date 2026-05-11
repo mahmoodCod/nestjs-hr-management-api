@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CycleStatus } from '../enums/cycle-status.enum';
+import { PerformanceKpi } from './performance-kpi.entity';
+import { PerformanceEvaluation } from './performance-evaluation.entity';
 
 /**
  * PerformanceCycle entity
@@ -33,8 +35,8 @@ export class PerformanceCycle {
   createdAt: Date;
 
   // Relations
-  @OneToMany(() => Kpi, (kpi) => kpi.cycle, { cascade: true })
-  kpis: Kpi[];
+  @OneToMany(() => PerformanceKpi, (kpi) => kpi.cycle, { cascade: true })
+  kpis: PerformanceKpi[];
 
   @OneToMany(() => PerformanceEvaluation, (eval) => eval.cycle)
   evaluations: PerformanceEvaluation[];
