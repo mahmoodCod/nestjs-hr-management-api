@@ -4,7 +4,7 @@ import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 /**
  * DTO for creating a KPI within a performance cycle
  */
-export class CreateKpiDto {
+export class CreatePerformanceKpiDto {
   @ApiProperty({
     example: 'Task Completion Rate',
     description: 'Title of the KPI',
