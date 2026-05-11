@@ -6,6 +6,7 @@ import { Between, In, Repository } from 'typeorm';
 import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
 import { User } from 'src/modules/auth/entities/user.entity';
 import { CreateReportDto } from '../dto/create-report.dto';
+import * as ExcelJS from 'exceljs';
 
 /**
  * Service responsible for generating reports (Excel files)
@@ -96,6 +97,20 @@ export class ReportService {
     });
 
     return this.buildLeaveExcel(leaves, true);
+  }
+
+  /**
+   * Build an Excel workbook from leave requests
+   * param leaves - Array of leave requests
+   * param includeUserInfo - Whether to include user name column (for manager reports)
+   * returns Excel file buffer
+   */
+  private async buildLeaveExcel(
+    leaves: LeaveRequest[],
+    includeUserInfo: boolean = false,
+  ): Promise<Buffer> {
+    const workbook = new ExcelJS.workbook();
+    const worksheet = workbook.addWorksheet('Leave Report');
   }
   findAll() {
     return `This action returns all report`;
