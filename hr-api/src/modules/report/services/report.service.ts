@@ -146,20 +146,16 @@ export class ReportService {
       worksheet.addRow(row);
       rowIndex++;
     }
-  }
-  findAll() {
-    return `This action returns all report`;
-  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} report`;
-  }
+    // Style header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFD3D3D3' },
+    };
 
-  update(id: number, updateReportDto: UpdateReportDto) {
-    return `This action updates a #${id} report`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} report`;
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer as Buffer;
   }
 }
