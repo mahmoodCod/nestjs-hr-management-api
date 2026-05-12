@@ -12,7 +12,7 @@ import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 @ApiTags('Employee - Performance')
 @Controller('employee/performance')
 @UseGuards(JwtAurhGuard)
-export class PerformanceController {
+export class EmployeePerformanceController {
   constructor(private readonly performanceService: PerformanceService) {}
 
   /**
