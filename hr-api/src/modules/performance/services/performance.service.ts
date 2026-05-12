@@ -6,6 +6,7 @@ import { KpiScore } from '../entities/performance-kpi-score.entity';
 import { PerformanceKpi } from '../entities/performance-kpi.entity';
 import { PerformanceEvaluation } from '../entities/performance-evaluation.entity';
 import { User } from 'src/modules/auth/entities/user.entity';
+import { CreatePerformanceCycleDto } from '../dto/create-performance-cycle.dto';
 
 /**
  * Service for managing performance appraisal cycles, KPIs, and evaluations.
@@ -25,4 +26,16 @@ export class PerformanceService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
   ) {}
+
+  // ==================== Cycle Management ====================
+
+  /**
+   * Create a new performance cycle
+   * param dto - cycle data
+   * returns created cycle
+   */
+  async createCycle(dto: CreatePerformanceCycleDto): Promise<PerformanceCycle> {
+    const cycle = this.cycleRepo.create(dto);
+    return await this.cycleRepo.save(cycle);
+  }
 }
