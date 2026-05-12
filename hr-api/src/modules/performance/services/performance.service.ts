@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PerformanceCycle } from '../entities/performance-cycle.entity';
 import { Repository } from 'typeorm';
@@ -143,6 +147,22 @@ export class PerformanceService {
     if (cycle.status === CycleStatus.COMPLETED) {
       throw new BadRequestException(
         'Cannot create evaluation for a completed cycle',
+      );
+    }
+
+    // Check employee exists
+    const employee = await this.userRepo.findOne({
+      where: { id: dto.employeeId },
+    });
+    if (!employee) throw new NotFoundException('Employee not found');
+
+    // Prevent duplicate evaluation for same employee & cycle
+    const existing = await this.evaluationRepo.findOne({
+      where: { employeeId: dto.employeeId, cycleId: dto.cycleId },
+    });
+    if (existing) {
+      throw new BadRequestException(
+        'Evaluation for this employee and cycle already exists',
       );
     }
   }
