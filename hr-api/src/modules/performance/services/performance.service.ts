@@ -59,4 +59,18 @@ export class PerformanceService {
     if (!cycle) throw new NotFoundException('Performance cycle not found');
     return cycle;
   }
+
+  /**
+   * Update a cycle (e.g., change dates, status)
+   * param id - cycle ID
+   * param dto - partial cycle data
+   */
+  async updateCycle(
+    id: number,
+    dto: Partial<CreatePerformanceCycleDto>,
+  ): Promise<PerformanceCycle> {
+    const cycle = await this.findOneCycle(id);
+    Object.assign(cycle, dto);
+    return await this.cycleRepo.save(cycle);
+  }
 }
