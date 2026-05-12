@@ -73,4 +73,13 @@ export class PerformanceService {
     Object.assign(cycle, dto);
     return await this.cycleRepo.save(cycle);
   }
+
+  /**
+   * Delete a cycle (and all associated KPIs and evaluations due to cascade)
+   * param id - cycle ID
+   */
+  async deleteCycle(id: number): Promise<void> {
+    const cycle = await this.findOneCycle(id);
+    await this.cycleRepo.remove(cycle);
+  }
 }
