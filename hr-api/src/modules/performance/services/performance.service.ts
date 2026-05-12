@@ -237,4 +237,18 @@ export class PerformanceService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  /**
+   * Get all evaluations (for manager) optionally filtered by cycle
+   *deparam cycleId - optional cycle ID filter
+   */
+  async findAllEvaluations(cycleId?: number): Promise<PerformanceEvaluation[]> {
+    const where: any = {};
+    if (cycleId) where.cycleId = cycleId;
+    return await this.evaluationRepo.find({
+      where,
+      relations: ['cycle', 'employee', 'reviewer'],
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
