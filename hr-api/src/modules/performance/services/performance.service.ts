@@ -209,5 +209,18 @@ export class PerformanceService {
       status: EvaluationStatus.SUBMITTED,
     });
     const savedEvaluation = await this.evaluationRepo.save(evaluation);
+
+    // Save individual KPI scores
+    for (const kpiScoreDto of dto.kpiScores) {
+      const kpiScore = this.kpiScoreRepo.create({
+        evaluationId: savedEvaluation.id,
+        kpiId: kpiScoreDto.kpiId,
+        score: kpiScoreDto.score,
+        remarks: kpiScoreDto.remarks,
+      });
+      await this.kpiScoreRepo.save(kpiScore);
+    }
+
+    return savedEvaluation;
   }
 }
