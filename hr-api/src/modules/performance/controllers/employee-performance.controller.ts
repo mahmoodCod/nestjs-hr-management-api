@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { PerformanceService } from '../services/performance.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
@@ -24,5 +24,17 @@ export class PerformanceController {
   async getMyEvaluations(@Req() req) {
     const employeeId = req.user.id;
     return this.performanceService.findEvaluationsByEmployee(employeeId);
+  }
+
+  /**
+   * Get detailed information of a specific evaluation including all KPI scores.
+   * param id - evaluation ID
+   */
+  @Get('evaluations/:id')
+  @ApiOperation({ summary: 'Get a specific evaluation with details' })
+  async getEvaluationDetail(@Param('id') id: string, @Req() req) {
+    const evaluation = await this.performanceService.findOneEvaluation(+id);
+    const kpiScores = await this.performanceService.getKpiScores(+id);
+    return { ...evaluation, kpiScores };
   }
 }
