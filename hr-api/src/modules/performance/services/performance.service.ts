@@ -14,6 +14,7 @@ import { CreatePerformanceCycleDto } from '../dto/create-performance-cycle.dto';
 import { CreatePerformanceKpiDto } from '../dto/create-performance-kpi.dto';
 import { CreateEvaluationDto } from '../dto/create-performance-evaluation.dto';
 import { CycleStatus } from '../enums/cycle-status.enum';
+import { EvaluationStatus } from '../enums/evaluation-status.enum';
 
 /**
  * Service for managing performance appraisal cycles, KPIs, and evaluations.
@@ -190,5 +191,23 @@ export class PerformanceService {
       totalWeightedScore += normalizedScore * kpi.weight;
       totalWeight += kpi.weight;
     }
+
+    // Check sum of weights (allow small floating point tolerance)
+    if (Math.abs(totalWeight - 1.0) > 0.01) {
+      throw new BadRequestException('Total weight of KPIs must equal 1.0');
+    }
+
+    const finalScore = totalWeightedScore * 100; // Convert to 0-100 scale
+
+    // Create evaluation record
+    const evaluation = this.evaluationRepo.create({
+      cycleId: dto.cycleId,
+      employeeId: dto.employeeId,
+      reviewerId,
+      finalScore,
+      comments: dto.comments,
+      status: EvaluationStatus.SUBMITTED,
+    });
+    const savedEvaluation = await this.evaluationRepo.save(evaluation);
   }
 }
