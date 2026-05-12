@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PerformanceCycle } from '../entities/performance-cycle.entity';
 import { Repository } from 'typeorm';
@@ -44,5 +44,19 @@ export class PerformanceService {
    */
   async findAllCycles(): Promise<PerformanceCycle[]> {
     return await this.cycleRepo.find({ order: { startDate: 'DESC' } });
+  }
+
+  /**
+   * Get a single cycle by ID with its KPIs
+   * param id - cycle ID
+   * throws NotFoundException if not found
+   */
+  async findOneCycle(id: number): Promise<PerformanceCycle> {
+    const cycle = await this.cycleRepo.findOne({
+      where: { id },
+      relations: ['kpis'],
+    });
+    if (!cycle) throw new NotFoundException('Performance cycle not found');
+    return cycle;
   }
 }
