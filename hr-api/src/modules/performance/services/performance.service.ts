@@ -264,4 +264,15 @@ export class PerformanceService {
     if (!evaluation) throw new NotFoundException('Evaluation not found');
     return evaluation;
   }
+
+  /**
+   * Get all KPI scores for a given evaluation
+   * param evaluationId - evaluation ID
+   */
+  async getKpiScores(evaluationId: number): Promise<KpiScore[]> {
+    return await this.kpiScoreRepo.find({
+      where: { evaluationId },
+      relations: ['kpi'],
+    });
+  }
 }
