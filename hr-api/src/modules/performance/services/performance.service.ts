@@ -99,4 +99,19 @@ export class PerformanceService {
     const kpi = this.kpiRepo.create({ ...dto, cycle });
     return await this.kpiRepo.save(kpi);
   }
+
+  /**
+   * Update an existing KPI
+   * param kpiId - ID of the KPI
+   * param dto - partial KPI data
+   */
+  async updateKpi(
+    kpiId: number,
+    dto: Partial<CreatePerformanceKpiDto>,
+  ): Promise<PerformanceKpi> {
+    const kpi = await this.kpiRepo.findOne({ where: { id: kpiId } });
+    if (!kpi) throw new NotFoundException('KPI not found');
+    Object.assign(kpi, dto);
+    return await this.kpiRepo.save(kpi);
+  }
 }
