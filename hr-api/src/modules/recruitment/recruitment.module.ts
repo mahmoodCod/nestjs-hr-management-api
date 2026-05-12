@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { RecruitmentService } from './recruitment.service';
-import { RecruitmentController } from './recruitment.controller';
+import { RecruitmentService } from './services/recruitment.service';
+import { RecruitmentController } from './controllers/recruitment.controller';
 
 @Module({
   controllers: [RecruitmentController],
