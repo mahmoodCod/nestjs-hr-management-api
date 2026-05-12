@@ -38,4 +38,11 @@ export class PerformanceService {
     const cycle = this.cycleRepo.create(dto);
     return await this.cycleRepo.save(cycle);
   }
+
+  /**
+   * Get all performance cycles (ordered by start date descending)
+   */
+  async findAllCycles(): Promise<PerformanceCycle[]> {
+    return await this.cycleRepo.find({ order: { startDate: 'DESC' } });
+  }
 }
