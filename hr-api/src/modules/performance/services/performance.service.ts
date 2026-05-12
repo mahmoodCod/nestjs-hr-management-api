@@ -7,6 +7,7 @@ import { PerformanceKpi } from '../entities/performance-kpi.entity';
 import { PerformanceEvaluation } from '../entities/performance-evaluation.entity';
 import { User } from 'src/modules/auth/entities/user.entity';
 import { CreatePerformanceCycleDto } from '../dto/create-performance-cycle.dto';
+import { CreatePerformanceKpiDto } from '../dto/create-performance-kpi.dto';
 
 /**
  * Service for managing performance appraisal cycles, KPIs, and evaluations.
@@ -81,5 +82,21 @@ export class PerformanceService {
   async deleteCycle(id: number): Promise<void> {
     const cycle = await this.findOneCycle(id);
     await this.cycleRepo.remove(cycle);
+  }
+
+  // ==================== KPI Management ====================
+
+  /**
+   * Add a new KPI to a specific cycle
+   * param cycleId - ID of the cycle
+   * param dto - KPI data
+   */
+  async addKpi(
+    cycleId: number,
+    dto: CreatePerformanceKpiDto,
+  ): Promise<PerformanceKpi> {
+    const cycle = await this.findOneCycle(cycleId);
+    const kpi = this.kpiRepo.create({ ...dto, cycle });
+    return await this.kpiRepo.save(kpi);
   }
 }
