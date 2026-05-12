@@ -223,4 +223,18 @@ export class PerformanceService {
 
     return savedEvaluation;
   }
+
+  /**
+   * Get all evaluations for a specific employee (for employee self-view)
+   * param employeeId - employee user ID
+   */
+  async findEvaluationsByEmployee(
+    employeeId: number,
+  ): Promise<PerformanceEvaluation[]> {
+    return await this.evaluationRepo.find({
+      where: { employeeId },
+      relations: ['cycle'],
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
