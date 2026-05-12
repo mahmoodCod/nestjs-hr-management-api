@@ -165,5 +165,30 @@ export class PerformanceService {
         'Evaluation for this employee and cycle already exists',
       );
     }
+
+    // Fetch all KPIs for the cycle
+    const kpis = await this.kpiRepo.find({ where: { cycleId: dto.cycleId } });
+    const kpiMap = new Map(kpis.map((k) => [k.id, k]));
+
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    // Validate each KPI score and accumulate weighted sum
+    for (const kpiScoreDto of dto.kpiScores) {
+      const kpi = kpiMap.get(kpiScoreDto.kpiId);
+      if (!kpi) {
+        throw new BadRequestException(
+          `KPI with id ${kpiScoreDto.kpiId} not found in this cycle`,
+        );
+      }
+      if (kpiScoreDto.score < 0 || kpiScoreDto.score > kpi.maxScore) {
+        throw new BadRequestException(
+          `Score for KPI "${kpi.title}" must be between 0 and ${kpi.maxScore}`,
+        );
+      }
+      const normalizedScore = kpiScoreDto.score / kpi.maxScore; // 0..1
+      totalWeightedScore += normalizedScore * kpi.weight;
+      totalWeight += kpi.weight;
+    }
   }
 }
