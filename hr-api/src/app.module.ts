@@ -13,6 +13,7 @@ import { PayrollModule } from './modules/payroll/payroll.module';
 import { LeaveModule } from './modules/leave/leave.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ReportModule } from './modules/report/report.module';
+import { PerformanceModule } from './modules/performance/performance.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ReportModule } from './modules/report/report.module';
     LeaveModule,
     NotificationModule,
     ReportModule,
+    PerformanceModule,
   ],
   controllers: [AppController],
   providers: [
