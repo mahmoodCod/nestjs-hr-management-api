@@ -251,4 +251,17 @@ export class PerformanceService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  /**
+   * Get a single evaluation by ID with its basic relations
+   * param id - evaluation ID
+   */
+  async findOneEvaluation(id: number): Promise<PerformanceEvaluation> {
+    const evaluation = await this.evaluationRepo.findOne({
+      where: { id },
+      relations: ['cycle', 'employee', 'reviewer'],
+    });
+    if (!evaluation) throw new NotFoundException('Evaluation not found');
+    return evaluation;
+  }
 }
