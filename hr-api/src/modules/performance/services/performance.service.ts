@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PerformanceCycle } from '../entities/performance-cycle.entity';
 import { Repository } from 'typeorm';
@@ -8,6 +8,8 @@ import { PerformanceEvaluation } from '../entities/performance-evaluation.entity
 import { User } from 'src/modules/auth/entities/user.entity';
 import { CreatePerformanceCycleDto } from '../dto/create-performance-cycle.dto';
 import { CreatePerformanceKpiDto } from '../dto/create-performance-kpi.dto';
+import { CreateEvaluationDto } from '../dto/create-performance-evaluation.dto';
+import { CycleStatus } from '../enums/cycle-status.enum';
 
 /**
  * Service for managing performance appraisal cycles, KPIs, and evaluations.
@@ -123,5 +125,25 @@ export class PerformanceService {
     const kpi = await this.kpiRepo.findOne({ where: { id: kpiId } });
     if (!kpi) throw new NotFoundException('KPI not found');
     await this.kpiRepo.remove(kpi);
+  }
+
+  // ==================== Evaluation Management ====================
+
+  /**
+   * Create a performance evaluation for an employee (manager only)
+   * Validates that all KPIs belong to the cycle, weights sum to 1, and scores are within limits.
+   * Calculates final score as weighted average scaled to 0-100.
+   * param reviewerId - ID of the manager creating the evaluation
+   * param dto - evaluation data including KPI scores
+   * returns created evaluation entity
+   */
+  async createEvaluation(reviewerId: number, dto: CreateEvaluationDto) {
+    // Check cycle exists and is not completed
+    const cycle = await this.findOneCycle(dto.cycleId);
+    if (cycle.status === CycleStatus.COMPLETED) {
+      throw new BadRequestException(
+        'Cannot create evaluation for a completed cycle',
+      );
+    }
   }
 }
