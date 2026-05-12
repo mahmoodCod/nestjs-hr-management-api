@@ -114,4 +114,14 @@ export class PerformanceService {
     Object.assign(kpi, dto);
     return await this.kpiRepo.save(kpi);
   }
+
+  /**
+   * Delete a KPI
+   * param kpiId - ID of the KPI
+   */
+  async deleteKpi(kpiId: number): Promise<void> {
+    const kpi = await this.kpiRepo.findOne({ where: { id: kpiId } });
+    if (!kpi) throw new NotFoundException('KPI not found');
+    await this.kpiRepo.remove(kpi);
+  }
 }
