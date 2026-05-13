@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Candidate } from '../entities/candidate.entity';
 import { Application } from '../entities/application.entity';
 import { CreateJobPostDto } from '../dto/create-job-post.dto';
+import { CreateCandidateDto } from '../dto/create-candidate.dto';
 
 /**
  * Recruitment Service
@@ -78,5 +79,22 @@ export class RecruitmentService {
   async deleteJobPost(id: number): Promise<void> {
     const jobPost = await this.findOneJobPost(id);
     await this.jobPostRepo.remove(jobPost);
+  }
+
+  // ==================== Candidates ====================
+
+  /**
+   * Create a new candidate profile.
+   * If a candidate with the same email already exists, returns existing candidate (idempotent).
+   * param dto - candidate information (name, email, phone, etc.)
+   * returns Candidate entity
+   */
+  async createCandidate(dto: CreateCandidateDto): Promise<Candidate> {
+    const existing = await this.candidateRepo.findOne({
+      where: { email: dto.email },
+    });
+    if (existing) return existing; // Idempotency: return existing candidate
+    const candidate = this.candidateRepo.create(dto);
+    return await this.candidateRepo.save(candidate);
   }
 }
