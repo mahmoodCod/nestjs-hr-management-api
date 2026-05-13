@@ -95,4 +95,12 @@ export class ManagerRecruitmentController {
   ) {
     return this.recruitmentService.updateApplicationStage(+id, dto);
   }
+
+  // ========== Candidates Management (optional) ==========
+
+  @Get('candidates')
+  @ApiOperation({ summary: 'Get all candidates (people who applied)' })
+  findAllCandidates() {
+    return this.recruitmentService.findAllCandidates();
+  }
 }
