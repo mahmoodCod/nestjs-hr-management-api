@@ -55,4 +55,28 @@ export class RecruitmentService {
     if (!jobPost) throw new NotFoundException('Job post not found');
     return jobPost;
   }
+
+  /**
+   * Update an existing job post (partial update allowed)
+   * param id - job post ID
+   * param dto - partial job post data
+   * returns updated JobPost
+   */
+  async updateJobPost(
+    id: number,
+    dto: Partial<CreateJobPostDto>,
+  ): Promise<JobPost> {
+    const jobPost = await this.findOneJobPost(id);
+    Object.assign(jobPost, dto);
+    return await this.jobPostRepo.save(jobPost);
+  }
+
+  /**
+   * Delete a job post
+   * param id - job post ID
+   */
+  async deleteJobPost(id: number): Promise<void> {
+    const jobPost = await this.findOneJobPost(id);
+    await this.jobPostRepo.remove(jobPost);
+  }
 }
