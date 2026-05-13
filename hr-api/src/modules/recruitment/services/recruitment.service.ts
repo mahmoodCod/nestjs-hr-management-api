@@ -97,4 +97,23 @@ export class RecruitmentService {
     const candidate = this.candidateRepo.create(dto);
     return await this.candidateRepo.save(candidate);
   }
+
+  /**
+   * Get all candidates (for manager use)
+   * returns array of Candidate
+   */
+  async findAllCandidates(): Promise<Candidate[]> {
+    return await this.candidateRepo.find();
+  }
+
+  /**
+   * Get a single candidate by ID
+   * param id - candidate ID
+   * throws NotFoundException if not found
+   */
+  async findOneCandidate(id: number): Promise<Candidate> {
+    const candidate = await this.candidateRepo.findOne({ where: { id } });
+    if (!candidate) throw new NotFoundException('Candidate not found');
+    return candidate;
+  }
 }
