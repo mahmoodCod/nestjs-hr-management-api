@@ -15,7 +15,7 @@ import { CreateApplicationDto } from '../dto/create-application.dto';
 @ApiTags('Employee - Recruitment')
 @Controller('employee/recruitment')
 @UseGuards(JwtAurhGuard)
-export class RecruitmentController {
+export class EmployeeRecruitmentController {
   constructor(private readonly recruitmentService: RecruitmentService) {}
 
   /**
