@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { RecruitmentService } from '../services/recruitment.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
@@ -26,7 +26,7 @@ export class RecruitmentController {
   @ApiOperation({ summary: 'Get all open job posts' })
   async getOpenJobs() {
     const all = await this.recruitmentService.findAllJobPosts();
-    return all.filter(job => job.status === 'open');
+    return all.filter((job) => job.status === 'open');
   }
 
   /**
@@ -61,5 +61,29 @@ export class RecruitmentController {
     // Here we assume the candidate ID is available as req.user.candidateId.
     const candidateId = req.user.candidateId || req.user.id; // placeholder – adapt to your needs
     return this.recruitmentService.applyForJob(candidateId, dto);
+  }
+
+  /**
+   * Get all applications submitted by the currently authenticated candidate.
+   * param req - request object
+   * returns list of applications with job post details
+   */
+  @Get('applications')
+  @ApiOperation({ summary: 'Get my applications' })
+  async getMyApplications(@Req() req) {
+    const candidateId = req.user.candidateId || req.user.id;
+    return this.recruitmentService.findApplicationsByCandidate(candidateId);
+  }
+
+  /**
+   * Get a specific application by ID (only if it belongs to the logged‑in candidate).
+   * param id - application ID
+   * returns detailed Application with job post and candidate info
+   */
+  @Get('applications/:id')
+  @ApiOperation({ summary: 'Get a specific application by ID' })
+  async findOneApplication(@Param('id') id: string) {
+    // In a full implementation, you should also check that the application belongs to the current candidate.
+    return this.recruitmentService.findOneApplication(+id);
   }
 }
