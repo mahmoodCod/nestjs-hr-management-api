@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JobPost } from '../entities/job-post.entity';
 import { Repository } from 'typeorm';
@@ -32,5 +32,27 @@ export class RecruitmentService {
   async createJobPost(dto: CreateJobPostDto): Promise<JobPost> {
     const jobPost = this.jobPostRepo.create(dto);
     return await this.jobPostRepo.save(jobPost);
+  }
+
+  /**
+   * Retrieve all job posts with department relations
+   * returns array of JobPost
+   */
+  async findAllJobPosts(): Promise<JobPost[]> {
+    return await this.jobPostRepo.find({ relations: ['department'] });
+  }
+
+  /**
+   * Get a single job post by ID with its department
+   * param id - job post ID
+   * throws NotFoundException if not exists
+   */
+  async findOneJobPost(id: number): Promise<JobPost> {
+    const jobPost = await this.jobPostRepo.findOne({
+      where: { id },
+      relations: ['department'],
+    });
+    if (!jobPost) throw new NotFoundException('Job post not found');
+    return jobPost;
   }
 }
