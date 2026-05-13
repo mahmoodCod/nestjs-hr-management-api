@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRecruitmentDto } from '../dto/create-job-post.dto';
-import { UpdateRecruitmentDto } from '../dto/update-recruitment.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { JobPost } from '../entities/job-post.entity';
+import { Repository } from 'typeorm';
+import { Candidate } from '../entities/candidate.entity';
+import { Application } from '../entities/application.entity';
 
+/**
+ * Recruitment Service
+ * Handles business logic for job posts, candidates, and applications.
+ * Provides methods for managers (full CRUD) and employees (apply, view own).
+ */
 @Injectable()
 export class RecruitmentService {
-  create(createRecruitmentDto: CreateRecruitmentDto) {
-    return 'This action adds a new recruitment';
-  }
-
-  findAll() {
-    return `This action returns all recruitment`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} recruitment`;
-  }
-
-  update(id: number, updateRecruitmentDto: UpdateRecruitmentDto) {
-    return `This action updates a #${id} recruitment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} recruitment`;
-  }
+  constructor(
+    @InjectRepository(JobPost)
+    private jobPostRepo: Repository<JobPost>,
+    @InjectRepository(Candidate)
+    private candidateRepo: Repository<Candidate>,
+    @InjectRepository(Application)
+    private applicationRepo: Repository<Application>,
+  ) {}
 }
