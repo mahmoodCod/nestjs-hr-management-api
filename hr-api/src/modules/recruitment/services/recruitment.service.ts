@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JobPost } from '../entities/job-post.entity';
 import { Repository } from 'typeorm';
@@ -7,6 +11,7 @@ import { Application } from '../entities/application.entity';
 import { CreateJobPostDto } from '../dto/create-job-post.dto';
 import { CreateCandidateDto } from '../dto/create-candidate.dto';
 import { CreateApplicationDto } from '../dto/create-application.dto';
+import { UpdateApplicationStageDto } from '../dto/update-application-stage.dto';
 
 /**
  * Recruitment Service
@@ -175,11 +180,49 @@ export class RecruitmentService {
    * param candidateId - ID of the candidate
    * returns array of Application with jobPost relation
    */
-  async findApplicationsByCandidate(candidateId: number): Promise<Application[]> {
+  async findApplicationsByCandidate(
+    candidateId: number,
+  ): Promise<Application[]> {
     return await this.applicationRepo.find({
       where: { candidateId },
       relations: ['jobPost'],
       order: { appliedDate: 'DESC' },
     });
+  }
+
+  /**
+   * Get a single application by ID with full relations
+   * param id - application ID
+   * throws NotFoundException if not found
+   */
+  async findOneApplication(id: number): Promise<Application> {
+    const app = await this.applicationRepo.findOne({
+      where: { id },
+      relations: ['jobPost', 'candidate'],
+    });
+    if (!app) throw new NotFoundException('Application not found');
+    return app;
+  }
+
+  /**
+   * Update the stage of an application (manager only)
+   * Allows setting notes, interview score, rejection reason.
+   * param id - application ID
+   * param dto - update data (stage, notes, score, rejection reason)
+   * returns updated Application
+   */
+  async updateApplicationStage(
+    id: number,
+    dto: UpdateApplicationStageDto,
+  ): Promise<Application> {
+    const application = await this.findOneApplication(id);
+    application.stage = dto.stage;
+    if (dto.notes) application.notes = dto.notes;
+    if (dto.interviewScore) application.interviewScore = dto.interviewScore;
+    if (dto.rejectionReason) application.rejectionReason = dto.rejectionReason;
+    if (dto.stage === 'rejected') {
+      application.rejectionReason = dto.rejectionReason || 'Not specified';
+    }
+    return await this.applicationRepo.save(application);
   }
 }
