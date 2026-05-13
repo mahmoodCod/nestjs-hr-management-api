@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 /**
  * Candidate entity
@@ -17,4 +24,19 @@ export class Candidate {
 
   @Column({ length: 20, nullable: true })
   phone: string;
+
+  @Column({ type: 'text', nullable: true })
+  address: string;
+
+  @Column({ name: 'resume_path', nullable: true })
+  resumePath: string; // Path to uploaded file (PDF/DOC)
+
+  @CreateDateColumn({ name: 'applied_at' })
+  appliedAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @OneToMany(() => Application, (app) => app.candidate)
+  applications: Application[];
 }
