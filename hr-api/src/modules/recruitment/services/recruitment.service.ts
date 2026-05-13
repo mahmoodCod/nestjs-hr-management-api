@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JobPost } from '../entities/job-post.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +6,7 @@ import { Candidate } from '../entities/candidate.entity';
 import { Application } from '../entities/application.entity';
 import { CreateJobPostDto } from '../dto/create-job-post.dto';
 import { CreateCandidateDto } from '../dto/create-candidate.dto';
+import { CreateApplicationDto } from '../dto/create-application.dto';
 
 /**
  * Recruitment Service
@@ -115,5 +116,42 @@ export class RecruitmentService {
     const candidate = await this.candidateRepo.findOne({ where: { id } });
     if (!candidate) throw new NotFoundException('Candidate not found');
     return candidate;
+  }
+
+  // ==================== Applications ====================
+
+  /**
+   * Apply for a job (submitted by a candidate)
+   * param candidateId - ID of the candidate (could be retrieved from token)
+   * param dto - contains jobPostId and optional notes
+   * returns created Application entity
+   * throws BadRequestException if job post is closed or duplicate application exists
+   */
+  async applyForJob(
+    candidateId: number,
+    dto: CreateApplicationDto,
+  ): Promise<Application> {
+    // Ensure job post exists and is open
+    const jobPost = await this.findOneJobPost(dto.jobPostId);
+    if (jobPost.status !== 'open') {
+      throw new BadRequestException(
+        'This job post is not open for applications',
+      );
+    }
+    // Ensure candidate exists
+    const candidate = await this.findOneCandidate(candidateId);
+    // Check for duplicate application
+    const existing = await this.applicationRepo.findOne({
+      where: { jobPostId: dto.jobPostId, candidateId },
+    });
+    if (existing) {
+      throw new BadRequestException('You have already applied for this job');
+    }
+    const application = this.applicationRepo.create({
+      jobPostId: dto.jobPostId,
+      candidateId,
+      notes: dto.notes,
+    });
+    return await this.applicationRepo.save(application);
   }
 }
