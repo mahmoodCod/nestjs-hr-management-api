@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
 import { Role } from 'src/shared/enums/user-role.enum';
 import { RecruitmentService } from '../services/recruitment.service';
 import { CreateJobPostDto } from '../dto/create-job-post.dto';
+import { UpdateApplicationStageDto } from '../dto/update-application-stage.dto';
 
 /**
  * Manager‑facing recruitment controller.
@@ -65,5 +67,32 @@ export class ManagerRecruitmentController {
   @ApiOperation({ summary: 'Delete a job post' })
   deleteJobPost(@Param('id') id: string) {
     return this.recruitmentService.deleteJobPost(+id);
+  }
+
+  // ========== Applications Management ==========
+
+  @Get('applications')
+  @ApiOperation({
+    summary: 'Get all applications (optionally filtered by jobPostId)',
+  })
+  findAllApplications(@Query('jobPostId') jobPostId?: string) {
+    return this.recruitmentService.findAllApplications(
+      jobPostId ? +jobPostId : undefined,
+    );
+  }
+
+  @Get('applications/:id')
+  @ApiOperation({ summary: 'Get a specific application with full details' })
+  findOneApplication(@Param('id') id: string) {
+    return this.recruitmentService.findOneApplication(+id);
+  }
+
+  @Patch('applications/:id/stage')
+  @ApiOperation({ summary: 'Update the recruitment stage of an application' })
+  updateApplicationStage(
+    @Param('id') id: string,
+    @Body() dto: UpdateApplicationStageDto,
+  ) {
+    return this.recruitmentService.updateApplicationStage(+id, dto);
   }
 }
