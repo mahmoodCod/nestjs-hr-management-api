@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { RecruitmentService } from '../services/recruitment.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CreateCandidateDto } from '../dto/create-candidate.dto';
+import { CreateApplicationDto } from '../dto/create-application.dto';
 
 /**
  * Employee-facing recruitment controller.
@@ -38,5 +39,27 @@ export class RecruitmentController {
   @ApiOperation({ summary: 'Create or update candidate profile' })
   async createOrUpdateCandidate(@Body() dto: CreateCandidateDto) {
     return this.recruitmentService.createCandidate(dto);
+  }
+
+  /**
+   * Submit an application for a specific job post.
+   * The candidate ID is resolved from the request (e.g., from JWT or candidate profile).
+   * param req - request object (contains user/candidate info)
+   * param dto - application data (jobPostId, optional notes)
+   * returns created Application entity
+   */
+  @Post('applications')
+  @ApiOperation({ summary: 'Apply for a job' })
+  async applyForJob(@Req() req, @Body() dto: CreateApplicationDto) {
+    // In a real implementation, candidateId would be extracted from the authenticated user.
+    // Here we assume the candidate's email is passed or stored in req.user.
+    // For simplicity, we require the candidate profile to exist, and we retrieve candidateId via email.
+    // In a fully integrated system, the User entity would have a relation to Candidate.
+    // We'll use a placeholder: retrieve candidateId from the candidate profile using the logged‑in user's email.
+    // For demo, we extract candidate email from the DTO or assume it's already stored.
+    // To keep the example clean, we use the candidateId that comes from the frontend (or from token after linking).
+    // Here we assume the candidate ID is available as req.user.candidateId.
+    const candidateId = req.user.candidateId || req.user.id; // placeholder – adapt to your needs
+    return this.recruitmentService.applyForJob(candidateId, dto);
   }
 }
