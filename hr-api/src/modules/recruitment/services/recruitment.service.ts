@@ -154,4 +154,32 @@ export class RecruitmentService {
     });
     return await this.applicationRepo.save(application);
   }
+
+  /**
+   * Get all applications (manager view), optionally filtered by job post ID
+   * param jobPostId - optional filter
+   * returns array of Application with jobPost and candidate relations
+   */
+  async findAllApplications(jobPostId?: number): Promise<Application[]> {
+    const where: any = {};
+    if (jobPostId) where.jobPostId = jobPostId;
+    return await this.applicationRepo.find({
+      where,
+      relations: ['jobPost', 'candidate'],
+      order: { appliedDate: 'DESC' },
+    });
+  }
+
+  /**
+   * Get all applications submitted by a specific candidate (for employee self‑view)
+   * param candidateId - ID of the candidate
+   * returns array of Application with jobPost relation
+   */
+  async findApplicationsByCandidate(candidateId: number): Promise<Application[]> {
+    return await this.applicationRepo.find({
+      where: { candidateId },
+      relations: ['jobPost'],
+      order: { appliedDate: 'DESC' },
+    });
+  }
 }
