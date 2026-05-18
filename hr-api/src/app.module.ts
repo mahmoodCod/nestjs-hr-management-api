@@ -11,6 +11,9 @@ import { RolesGuard } from './modules/auth/guards/roles.guard';
 import { AttendanceModule } from './modules/attendences/attendances.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
 import { LeaveModule } from './modules/leave/leave.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { ReportModule } from './modules/report/report.module';
+import { PerformanceModule } from './modules/performance/performance.module';
 
 @Module({
   imports: [
@@ -42,6 +45,9 @@ import { LeaveModule } from './modules/leave/leave.module';
     AttendanceModule,
     PayrollModule,
     LeaveModule,
+    NotificationModule,
+    ReportModule,
+    PerformanceModule,
   ],
   controllers: [AppController],
   providers: [
