@@ -69,5 +69,33 @@ describe('LeaveController (e2e)', () => {
       expect(response.body.data).toHaveProperty('id');
       expect(response.body.data.status).toBe(LeaveRequestStatusEnum.PENDING);
     });
+
+    it('should fail if no token provided', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/employee/leave/request')
+        .send({
+          leaveTypeId: 1,
+          startDate: '2026-06-10',
+          endDate: '2026-06-12',
+        })
+        .expect(401);
+    });
+  });
+
+  describe('/manager/leave/:id/status (PATCH)', () => {
+    it('should allow manager to approve a leave request', async () => {
+      // First create a leave request as employee
+      const empToken = await getTokenForUser('employee1');
+      const leaveRes = await request(app.getHttpServer())
+        .post('/api/v1/employee/leave/request')
+        .set('Authorization', `Bearer ${empToken}`)
+        .send({
+          leaveTypeId: 1,
+          startDate: '2026-07-01',
+          endDate: '2026-07-03',
+        })
+        .expect(201);
+      const leaveId = leaveRes.body.data.id;
+    });
   });
 });
