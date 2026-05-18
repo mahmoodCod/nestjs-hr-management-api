@@ -96,6 +96,14 @@ describe('LeaveController (e2e)', () => {
         })
         .expect(201);
       const leaveId = leaveRes.body.data.id;
+
+      // Then manager approves
+      const managerToken = await getTokenForUser('manager1');
+      await request(app.getHttpServer())
+        .patch(`/api/v1/manager/leave/${leaveId}/status`)
+        .set('Authorization', `Bearer ${managerToken}`)
+        .send({ status: 'approved' })
+        .expect(200);
     });
   });
 });
