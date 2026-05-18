@@ -5,6 +5,7 @@ import { request } from 'http';
 import { AppModule } from 'src/app.module';
 import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
 import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
+import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
 import { Repository } from 'typeorm';
 
 describe('LeaveController (e2e)', () => {
@@ -48,10 +49,25 @@ describe('LeaveController (e2e)', () => {
   describe('/employee/leave/request (POST)', () => {
     it('should create a leave request for authenticated employee', async () => {
       const loginRes = await request(app.getHttpServer())
-        .post('/auth/login')
+        .post('/api/v1/auth/login')
         .send({ username: 'employee1', password: 'password' }); // adjust based on your auth
 
       const token = loginRes.body.access_token;
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/employee/leave/request')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          leaveTypeId: 1,
+          startDate: '2026-06-10',
+          endDate: '2026-06-12',
+          reason: 'Test leave',
+        })
+        .expect(201);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('id');
+      expect(response.body.data.status).toBe(LeaveRequestStatusEnum.PENDING);
     });
   });
 });
