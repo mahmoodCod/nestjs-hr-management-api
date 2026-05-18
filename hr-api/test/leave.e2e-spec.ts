@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { request } from 'http';
 import { AppModule } from 'src/app.module';
 import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
 import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
@@ -41,6 +42,16 @@ describe('LeaveController (e2e)', () => {
       name: 'Paid Leave',
       daysPerYear: 20,
       requiresApproval: true,
+    });
+  });
+
+  describe('/employee/leave/request (POST)', () => {
+    it('should create a leave request for authenticated employee', async () => {
+      const loginRes = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ username: 'employee1', password: 'password' }); // adjust based on your auth
+
+      const token = loginRes.body.access_token;
     });
   });
 });
