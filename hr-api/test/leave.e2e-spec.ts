@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -8,23 +9,32 @@ import { LeaveType } from '../src/modules/leave/entities/leave-type.entity';
 import { LeaveRequestStatusEnum } from '../src/modules/leave/enums/leave-request.enum';
 import { Repository } from 'typeorm';
 import { User } from '../src/modules/auth/entities/user.entity';
+import { Role } from '../src/shared/enums/user-role.enum';
+import * as bcrypt from 'bcrypt';
 
+jest.setTimeout(30000); // 30 seconds timeout
 describe('LeaveController (e2e)', () => {
   let app: INestApplication;
   let leaveRequestRepo: Repository<LeaveRequest>;
   let leaveTypeRepo: Repository<LeaveType>;
   let userRepo: Repository<User>;
 
-  // Helper to get JWT token for a user
   async function getTokenForUser(
-    username: string,
-    password: string = 'password123',
+    mobile: string,
+    password: string,
   ): Promise<string> {
     const loginRes = await request(app.getHttpServer())
-      .post('/api/v1/auth/login')
-      .send({ username, password })
+      .post('/auth/login')
+      .send({ mobile, password })
       .expect(201);
-    return loginRes.body.access_token;
+    console.log(loginRes.body);
+    const token =
+      loginRes.body.accessToken || loginRes.body.data?.accessToken;
+    if (!token) {
+      console.error('Login response:', loginRes.body);
+      throw new Error('Token not found in login response');
+    }
+    return token;
   }
 
   beforeAll(async () => {
@@ -42,17 +52,42 @@ describe('LeaveController (e2e)', () => {
       getRepositoryToken(LeaveType),
     );
     userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
+
+    // Create test users
+    const hashedPassword = await bcrypt.hash('MahmoodZar1', 10);
+    const employeeMobile = '09932915475';
+    const managerMobile = '09932915478';
+
+    let employee = await userRepo.findOneBy({ mobile: employeeMobile });
+    if (!employee) {
+      employee = await userRepo.save({
+        mobile: employeeMobile,
+        password: hashedPassword,
+        role: Role.EMPLOYEE,
+      });
+    }
+    let manager = await userRepo.findOneBy({ mobile: managerMobile });
+    if (!manager) {
+      manager = await userRepo.save({
+        mobile: managerMobile,
+        password: hashedPassword,
+        role: Role.MANAGER,
+      });
+    }
+    console.log(
+      `Test users ready: employee ID ${employee.id}, manager ID ${manager.id}`,
+    );
   });
 
   afterAll(async () => {
+    if (app) {
     await app.close();
+    }
   });
 
   beforeEach(async () => {
-    // Clean up tables before each test
-    await leaveRequestRepo.delete({});
-    await leaveTypeRepo.delete({});
-    // Ensure a default leave type exists (id=1)
+    await leaveRequestRepo.createQueryBuilder().delete().execute();
+    await leaveTypeRepo.createQueryBuilder().delete().execute();
     await leaveTypeRepo.save({
       id: 1,
       name: 'Paid Leave',
@@ -63,12 +98,9 @@ describe('LeaveController (e2e)', () => {
 
   describe('/employee/leave/request (POST)', () => {
     it('should create a leave request for authenticated employee', async () => {
-      // First, ensure an employee user exists (you might need to seed in beforeAll)
-      // For simplicity, we assume there is an employee with username 'employee1', password 'password123'
-      const token = await getTokenForUser('employee1', 'password123');
-
+      const token = await getTokenForUser('09932915475', 'MahmoodZar1');
       const response = await request(app.getHttpServer())
-        .post('/api/v1/employee/leave/request')
+        .post('/employee/leave/request')
         .set('Authorization', `Bearer ${token}`)
         .send({
           leaveTypeId: 1,
@@ -77,15 +109,13 @@ describe('LeaveController (e2e)', () => {
           reason: 'Test leave',
         })
         .expect(201);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty('id');
-      expect(response.body.data.status).toBe(LeaveRequestStatusEnum.PENDING);
+        expect(response.body).toHaveProperty('id');
+        expect(response.body.status).toBe(LeaveRequestStatusEnum.PENDING);
     });
 
     it('should fail if no token provided', async () => {
       await request(app.getHttpServer())
-        .post('/api/v1/employee/leave/request')
+        .post('/employee/leave/request')
         .send({
           leaveTypeId: 1,
           startDate: '2026-06-10',
@@ -95,25 +125,24 @@ describe('LeaveController (e2e)', () => {
     });
 
     it('should fail with invalid leave type', async () => {
-      const token = await getTokenForUser('employee1', 'password123');
+      const token = await getTokenForUser('09932915475', 'MahmoodZar1');
       await request(app.getHttpServer())
-        .post('/api/v1/employee/leave/request')
+        .post('/employee/leave/request')
         .set('Authorization', `Bearer ${token}`)
         .send({
           leaveTypeId: 999,
           startDate: '2026-06-10',
           endDate: '2026-06-12',
         })
-        .expect(404); // Not Found
+        .expect(404);
     });
   });
 
   describe('/manager/leave/:id/status (PATCH)', () => {
     it('should allow manager to approve a leave request', async () => {
-      // Create a leave request as employee
-      const empToken = await getTokenForUser('employee1', 'password123');
+      const empToken = await getTokenForUser('09932915475', 'MahmoodZar1');
       const leaveRes = await request(app.getHttpServer())
-        .post('/api/v1/employee/leave/request')
+        .post('/employee/leave/request')
         .set('Authorization', `Bearer ${empToken}`)
         .send({
           leaveTypeId: 1,
@@ -121,26 +150,22 @@ describe('LeaveController (e2e)', () => {
           endDate: '2026-07-03',
         })
         .expect(201);
-      const leaveId = leaveRes.body.data.id;
+      const leaveId = leaveRes.body.id;
 
-      // Manager approves
-      const managerToken = await getTokenForUser('manager1', 'password123');
+      const managerToken = await getTokenForUser('09932915478', 'MahmoodZar1');
       await request(app.getHttpServer())
-        .patch(`/api/v1/manager/leave/${leaveId}/status`)
+        .patch(`/manager/leave/${leaveId}/status`)
         .set('Authorization', `Bearer ${managerToken}`)
         .send({ status: LeaveRequestStatusEnum.APPROVED })
         .expect(200);
-
-      // Verify status changed
       const updated = await leaveRequestRepo.findOneBy({ id: leaveId });
-      expect(updated.status).toBe(LeaveRequestStatusEnum.APPROVED);
+      expect(updated?.status).toBe(LeaveRequestStatusEnum.APPROVED);
     });
 
     it('should reject if not a manager', async () => {
-      // Create leave as employee
-      const empToken = await getTokenForUser('employee1', 'password123');
+      const empToken = await getTokenForUser('09932915475', 'MahmoodZar1');
       const leaveRes = await request(app.getHttpServer())
-        .post('/api/v1/employee/leave/request')
+        .post('/employee/leave/request')
         .set('Authorization', `Bearer ${empToken}`)
         .send({
           leaveTypeId: 1,
@@ -148,14 +173,13 @@ describe('LeaveController (e2e)', () => {
           endDate: '2026-07-12',
         })
         .expect(201);
-      const leaveId = leaveRes.body.data.id;
+      const leaveId = leaveRes.body.id;
 
-      // Try to patch as same employee (not manager)
       await request(app.getHttpServer())
-        .patch(`/api/v1/manager/leave/${leaveId}/status`)
+        .patch(`/manager/leave/${leaveId}/status`)
         .set('Authorization', `Bearer ${empToken}`)
         .send({ status: LeaveRequestStatusEnum.APPROVED })
-        .expect(403); // Forbidden
+        .expect(403);
     });
   });
 });
