@@ -8,11 +8,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
 import { LeaveService } from '../services/leave.service';
-import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
-import { Role } from 'src/shared/enums/user-role.enum';
-import { Roles } from 'src/modules/auth/decorators/roles.decorator';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Role } from '../../../shared/enums/user-role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { UpdateLeaveRequestDto } from '../dto/update-leave.request.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 

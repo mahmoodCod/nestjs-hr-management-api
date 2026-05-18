@@ -11,10 +11,10 @@ import {
 import { LeaveService } from '../services/leave.service';
 import { CreateLeaveTypeDto } from '../dto/create-leave.type.dto';
 import { UpdateLeaveTypeDto } from '../dto/update-leave.type.dto';
-import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
-import { Role } from 'src/shared/enums/user-role.enum';
-import { Roles } from 'src/modules/auth/decorators/roles.decorator';
+import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Role } from '../../../shared/enums/user-role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
