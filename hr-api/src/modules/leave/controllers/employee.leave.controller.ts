@@ -12,7 +12,7 @@ import {
 import { LeaveService } from '../services/leave.service';
 import { CreateLeaveRequestDto } from '../dto/create-leave.request.dto';
 import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
-import { Roles } from '../..//auth/decorators/roles.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../../shared/enums/user-role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
