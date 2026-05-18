@@ -102,8 +102,13 @@ describe('LeaveController (e2e)', () => {
       await request(app.getHttpServer())
         .patch(`/api/v1/manager/leave/${leaveId}/status`)
         .set('Authorization', `Bearer ${managerToken}`)
-        .send({ status: 'approved' })
+        .send({ status: LeaveRequestStatusEnum.APPROVED })
         .expect(200);
     });
   });
 });
+
+// Helper function to get token (adjust based on your auth service)
+async function getTokenForUser(username: string, password = 'password') {
+  // implement actual login request
+}
