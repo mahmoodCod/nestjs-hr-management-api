@@ -1,17 +1,29 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { request } from 'http';
-import { AppModule } from 'src/app.module';
-import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
-import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
-import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
+import { LeaveRequest } from '../src/modules/leave/entities/leave-request.entity';
+import { LeaveType } from '../src/modules/leave/entities/leave-type.entity';
+import { LeaveRequestStatusEnum } from '../src/modules/leave/enums/leave-request.enum';
 import { Repository } from 'typeorm';
+import { User } from '../src/modules/auth/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 describe('LeaveController (e2e)', () => {
   let app: INestApplication;
   let leaveRequestRepo: Repository<LeaveRequest>;
   let leaveTypeRepo: Repository<LeaveType>;
+  let userRepo: Repository<User>;
+
+  // Helper to get JWT token for a user
+  async function getTokenForUser(username: string, password: string = 'password123'): Promise<string> {
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ username, password })
+      .expect(201);
+    return loginRes.body.access_token;
+  }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -21,12 +33,9 @@ describe('LeaveController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    leaveRequestRepo = moduleFixture.get<Repository<LeaveRequest>>(
-      getRepositoryToken(LeaveRequest),
-    );
-    leaveTypeRepo = moduleFixture.get<Repository<LeaveType>>(
-      getRepositoryToken(LeaveType),
-    );
+    leaveRequestRepo = moduleFixture.get<Repository<LeaveRequest>>(getRepositoryToken(LeaveRequest));
+    leaveTypeRepo = moduleFixture.get<Repository<LeaveType>>(getRepositoryToken(LeaveType));
+    userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
   });
 
   afterAll(async () => {
@@ -34,10 +43,10 @@ describe('LeaveController (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Clean tables before each test
+    // Clean up tables before each test
     await leaveRequestRepo.delete({});
     await leaveTypeRepo.delete({});
-    // Insert a default leave type
+    // Ensure a default leave type exists (id=1)
     await leaveTypeRepo.save({
       id: 1,
       name: 'Paid Leave',
@@ -48,11 +57,9 @@ describe('LeaveController (e2e)', () => {
 
   describe('/employee/leave/request (POST)', () => {
     it('should create a leave request for authenticated employee', async () => {
-      const loginRes = await request(app.getHttpServer())
-        .post('/api/v1/auth/login')
-        .send({ username: 'employee1', password: 'password' }); // adjust based on your auth
-
-      const token = loginRes.body.access_token;
+      // First, ensure an employee user exists (you might need to seed in beforeAll)
+      // For simplicity, we assume there is an employee with username 'employee1', password 'password123'
+      const token = await getTokenForUser('employee1', 'password123');
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/employee/leave/request')
@@ -80,12 +87,25 @@ describe('LeaveController (e2e)', () => {
         })
         .expect(401);
     });
+
+    it('should fail with invalid leave type', async () => {
+      const token = await getTokenForUser('employee1', 'password123');
+      await request(app.getHttpServer())
+        .post('/api/v1/employee/leave/request')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          leaveTypeId: 999,
+          startDate: '2026-06-10',
+          endDate: '2026-06-12',
+        })
+        .expect(404); // Not Found
+    });
   });
 
   describe('/manager/leave/:id/status (PATCH)', () => {
     it('should allow manager to approve a leave request', async () => {
-      // First create a leave request as employee
-      const empToken = await getTokenForUser('employee1');
+      // Create a leave request as employee
+      const empToken = await getTokenForUser('employee1', 'password123');
       const leaveRes = await request(app.getHttpServer())
         .post('/api/v1/employee/leave/request')
         .set('Authorization', `Bearer ${empToken}`)
@@ -97,18 +117,39 @@ describe('LeaveController (e2e)', () => {
         .expect(201);
       const leaveId = leaveRes.body.data.id;
 
-      // Then manager approves
-      const managerToken = await getTokenForUser('manager1');
+      // Manager approves
+      const managerToken = await getTokenForUser('manager1', 'password123');
       await request(app.getHttpServer())
         .patch(`/api/v1/manager/leave/${leaveId}/status`)
         .set('Authorization', `Bearer ${managerToken}`)
         .send({ status: LeaveRequestStatusEnum.APPROVED })
         .expect(200);
+
+      // Verify status changed
+      const updated = await leaveRequestRepo.findOneBy({ id: leaveId });
+      expect(updated.status).toBe(LeaveRequestStatusEnum.APPROVED);
+    });
+
+    it('should reject if not a manager', async () => {
+      // Create leave as employee
+      const empToken = await getTokenForUser('employee1', 'password123');
+      const leaveRes = await request(app.getHttpServer())
+        .post('/api/v1/employee/leave/request')
+        .set('Authorization', `Bearer ${empToken}`)
+        .send({
+          leaveTypeId: 1,
+          startDate: '2026-07-10',
+          endDate: '2026-07-12',
+        })
+        .expect(201);
+      const leaveId = leaveRes.body.data.id;
+
+      // Try to patch as same employee (not manager)
+      await request(app.getHttpServer())
+        .patch(`/api/v1/manager/leave/${leaveId}/status`)
+        .set('Authorization', `Bearer ${empToken}`)
+        .send({ status: LeaveRequestStatusEnum.APPROVED })
+        .expect(403); // Forbidden
     });
   });
 });
-
-// Helper function to get token (adjust based on your auth service)
-async function getTokenForUser(username: string, password = 'password') {
-  // implement actual login request
-}
