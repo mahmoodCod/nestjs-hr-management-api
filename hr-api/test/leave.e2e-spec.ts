@@ -1,14 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { LeaveRequest } from '../src/modules/leave/entities/leave-request.entity';
 import { LeaveType } from '../src/modules/leave/entities/leave-type.entity';
 import { LeaveRequestStatusEnum } from '../src/modules/leave/enums/leave-request.enum';
 import { Repository } from 'typeorm';
 import { User } from '../src/modules/auth/entities/user.entity';
-import * as bcrypt from 'bcrypt';
 
 describe('LeaveController (e2e)', () => {
   let app: INestApplication;
@@ -17,7 +16,10 @@ describe('LeaveController (e2e)', () => {
   let userRepo: Repository<User>;
 
   // Helper to get JWT token for a user
-  async function getTokenForUser(username: string, password: string = 'password123'): Promise<string> {
+  async function getTokenForUser(
+    username: string,
+    password: string = 'password123',
+  ): Promise<string> {
     const loginRes = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
       .send({ username, password })
@@ -33,8 +35,12 @@ describe('LeaveController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    leaveRequestRepo = moduleFixture.get<Repository<LeaveRequest>>(getRepositoryToken(LeaveRequest));
-    leaveTypeRepo = moduleFixture.get<Repository<LeaveType>>(getRepositoryToken(LeaveType));
+    leaveRequestRepo = moduleFixture.get<Repository<LeaveRequest>>(
+      getRepositoryToken(LeaveRequest),
+    );
+    leaveTypeRepo = moduleFixture.get<Repository<LeaveType>>(
+      getRepositoryToken(LeaveType),
+    );
     userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
   });
 
