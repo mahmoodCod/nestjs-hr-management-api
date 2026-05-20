@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { LeaveType } from './leave-type.entity';
-import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
-import { User } from 'src/modules/auth/entities/user.entity';
+import { LeaveRequestStatusEnum } from '../../../modules/leave/enums/leave-request.enum';
+import { User } from '../../../modules/auth/entities/user.entity';
 
 @Entity('leave_requests')
 export class LeaveRequest {

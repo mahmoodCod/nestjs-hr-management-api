@@ -1,15 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { User } from 'src/modules/auth/entities/user.entity';
-import { LeaveRequest } from 'src/modules/leave/entities/leave-request.entity';
-import { LeaveType } from 'src/modules/leave/entities/leave-type.entity';
+import { User } from '../src/modules/auth/entities/user.entity';
+import { LeaveRequest } from '../src/modules/leave/entities/leave-request.entity';
+import { LeaveType } from '../src/modules/leave/entities/leave-type.entity';
 import { Repository } from 'typeorm';
-import { AppModule } from 'src/app.module';
+import { AppModule } from '../src/app.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { Role } from '../src/shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
-import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
+import { LeaveRequestStatusEnum } from '../src/modules/leave/enums/leave-request.enum';
 
 jest.setTimeout(30000);
 
