@@ -134,5 +134,20 @@ describe('ReportController (e2e)', () => {
         .get('/employee/report/leave')
         .expect(401);
     });
+
+    it('should accept query filters (startDate, endDate, leaveTypeId)', async () => {
+      const token = await getTokenForUser('09932915475', 'password123');
+      const response = await request(app.getHttpServer())
+        .get('/employee/report/leave')
+        .query({
+          startDate: '2026-05-01',
+          endDate: '2026-05-31',
+          leaveTypeId: 1,
+        })
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(response.body.length).toBeGreaterThan(0);
+    });
   });
 });
