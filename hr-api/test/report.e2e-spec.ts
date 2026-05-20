@@ -9,6 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Role } from 'src/shared/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
+import { LeaveRequestStatusEnum } from 'src/modules/leave/enums/leave-request.enum';
 
 jest.setTimeout(30000);
 
@@ -77,5 +78,31 @@ describe('ReportController (e2e)', () => {
       daysPerYear: 20,
       requiresApproval: true,
     });
+
+    // Create some leave requests for the employee (approved and pending)
+    await leaveRequestRepo.save([
+      {
+        userId: employee.id,
+        leaveTypeId: 1,
+        startDate: new Date('2026-05-01'),
+        endDate: new Date('2026-05-03'),
+        durationDays: 3,
+        status: LeaveRequestStatusEnum.APPROVED,
+        reason: 'Vacation',
+      },
+      {
+        userId: employee.id,
+        leaveTypeId: 1,
+        startDate: new Date('2026-06-10'),
+        endDate: new Date('2026-06-12'),
+        durationDays: 3,
+        status: LeaveRequestStatusEnum.PENDING,
+        reason: 'Sick leave',
+      },
+    ]);
+
+    console.log(
+      `Test users ready: employee ID ${employee.id}, manager ID ${manager.id}`,
+    );
   });
 });
