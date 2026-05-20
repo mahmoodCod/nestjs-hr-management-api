@@ -1,9 +1,9 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { Roles } from 'src/modules/auth/decorators/roles.decorator';
-import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
+import { Roles } from '../../../modules/auth/decorators/roles.decorator';
+import { RolesGuard } from '../../../modules/auth/guards/roles.guard';
 import { NotificationService } from '../services/notification.service';
-import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { JwtAurhGuard } from '../../../modules/auth/guards/jwt-auth.guard';
+import { Role } from '../../../shared/enums/user-role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 /**

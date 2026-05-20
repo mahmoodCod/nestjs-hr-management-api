@@ -103,7 +103,7 @@ export class LeaveService {
         startDate: Between(startDate, endDate),
       },
     });
-    if (!overLapping)
+    if (overLapping)
       throw new BadRequestException(
         'Leave request conflicts with another request',
       );
