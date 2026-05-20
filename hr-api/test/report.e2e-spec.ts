@@ -39,8 +39,12 @@ describe('ReportController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    leaveRequestRepo = moduleFixture.get<Repository<LeaveRequest>>(getRepositoryToken(LeaveRequest));
-    leaveTypeRepo = moduleFixture.get<Repository<LeaveType>>(getRepositoryToken(LeaveType));
+    leaveRequestRepo = moduleFixture.get<Repository<LeaveRequest>>(
+      getRepositoryToken(LeaveRequest),
+    );
+    leaveTypeRepo = moduleFixture.get<Repository<LeaveType>>(
+      getRepositoryToken(LeaveType),
+    );
     userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
 
     // Create test users
@@ -56,5 +60,22 @@ describe('ReportController (e2e)', () => {
         role: Role.EMPLOYEE,
       });
     }
+
+    let manager = await userRepo.findOneBy({ mobile: managerMobile });
+    if (!manager) {
+      manager = await userRepo.save({
+        mobile: managerMobile,
+        password: hashedPassword,
+        role: Role.MANAGER,
+      });
+    }
+
+    // Create a leave type
+    await leaveTypeRepo.save({
+      id: 1,
+      name: 'Paid Leave',
+      daysPerYear: 20,
+      requiresApproval: true,
+    });
   });
 });
