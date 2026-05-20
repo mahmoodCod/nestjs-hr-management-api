@@ -167,5 +167,13 @@ describe('ReportController (e2e)', () => {
       );
       expect(response.body.length).toBeGreaterThan(0);
     });
+
+    it('should not allow employee to access manager endpoint', async () => {
+      const token = await getTokenForUser('09932915475', 'password123');
+      await request(app.getHttpServer())
+        .get('/manager/report/leave')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(403); // Forbidden
+    });
   });
 });
