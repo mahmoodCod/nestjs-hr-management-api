@@ -150,4 +150,22 @@ describe('ReportController (e2e)', () => {
       expect(response.body.length).toBeGreaterThan(0);
     });
   });
+
+  describe('Manager Report Endpoints', () => {
+    it('should download team leave report as Excel for authenticated manager', async () => {
+      const token = await getTokenForUser('09932915478', 'password123');
+      const response = await request(app.getHttpServer())
+        .get('/manager/report/leave')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(response.headers['content-type']).toMatch(
+        /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/,
+      );
+      expect(response.headers['content-disposition']).toContain(
+        'attachment; filename="team_leave_report.xlsx"',
+      );
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+  });
 });
