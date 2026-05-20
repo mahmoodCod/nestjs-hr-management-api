@@ -105,4 +105,18 @@ describe('ReportController (e2e)', () => {
       `Test users ready: employee ID ${employee.id}, manager ID ${manager.id}`,
     );
   });
+
+  afterAll(async () => {
+    if (app) await app.close();
+  });
+
+  describe('Employee Report Endpoints', () => {
+    it('should download leave report as Excel for authenticated employee', async () => {
+      const token = await getTokenForUser('09932915475', 'password123');
+      const response = await request(app.getHttpServer())
+        .get('/employee/report/leave')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+    });
+  });
 });
