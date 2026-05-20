@@ -114,7 +114,7 @@ describe('ReportController (e2e)', () => {
     it('should download leave report as Excel for authenticated employee', async () => {
       const token = await getTokenForUser('09932915475', 'password123');
       const response = await request(app.getHttpServer())
-        .get('/employee/report/leave')
+        .get('/employee/report')
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
@@ -138,7 +138,7 @@ describe('ReportController (e2e)', () => {
     it('should accept query filters (startDate, endDate, leaveTypeId)', async () => {
       const token = await getTokenForUser('09932915475', 'password123');
       const response = await request(app.getHttpServer())
-        .get('/employee/report/leave')
+        .get('/employee/report')
         .query({
           startDate: '2026-05-01',
           endDate: '2026-05-31',
@@ -155,7 +155,7 @@ describe('ReportController (e2e)', () => {
     it('should download team leave report as Excel for authenticated manager', async () => {
       const token = await getTokenForUser('09932915478', 'password123');
       const response = await request(app.getHttpServer())
-        .get('/manager/report/leave')
+        .get('/manager/report')
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
@@ -171,7 +171,7 @@ describe('ReportController (e2e)', () => {
     it('should not allow employee to access manager endpoint', async () => {
       const token = await getTokenForUser('09932915475', 'password123');
       await request(app.getHttpServer())
-        .get('/manager/report/leave')
+        .get('/manager/report')
         .set('Authorization', `Bearer ${token}`)
         .expect(403); // Forbidden
     });

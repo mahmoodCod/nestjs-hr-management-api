@@ -8,7 +8,7 @@ export class CreateReportDto {
   })
   @IsDateString()
   @IsOptional()
-  startDate?: string;
+  startDate?: Date;
 
   @ApiPropertyOptional({
     example: '2026-12-31',
@@ -16,7 +16,7 @@ export class CreateReportDto {
   })
   @IsDateString()
   @IsOptional()
-  endDate?: string;
+  endDate?: Date;
 
   @ApiPropertyOptional({ example: 1, description: 'Leave type ID' })
   @IsInt()
