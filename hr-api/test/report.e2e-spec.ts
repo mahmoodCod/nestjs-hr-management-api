@@ -117,6 +117,22 @@ describe('ReportController (e2e)', () => {
         .get('/employee/report/leave')
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
+
+      // Check headers for Excel file
+      expect(response.headers['content-type']).toMatch(
+        /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/,
+      );
+      expect(response.headers['content-disposition']).toContain(
+        'attachment; filename="leave_report.xlsx"',
+      );
+      expect(response.body).toBeInstanceOf(Buffer);
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+
+    it('should fail without token', async () => {
+      await request(app.getHttpServer())
+        .get('/employee/report/leave')
+        .expect(401);
     });
   });
 });
