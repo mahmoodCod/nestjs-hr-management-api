@@ -10,7 +10,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LeaveRequest } from '../entities/leave-request.entity';
 import { Between, In, Repository } from 'typeorm';
 import { LeaveType } from '../entities/leave-type.entity';
+
 import { LeaveRequestStatusEnum } from '../../../modules/leave/enums/leave-request.enum';
+import { LeaveRequestStatusEnum } from '../../leave/enums/leave-request.enum';
 import { CreateLeaveTypeDto } from '../dto/create-leave.type.dto';
 import { UpdateLeaveTypeDto } from '../dto/update-leave.type.dto';
 import { NotificationService } from '../../../modules/notification/services/notification.service';

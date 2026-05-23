@@ -15,6 +15,10 @@ import { JwtAurhGuard } from '../../../modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../modules/auth/guards/roles.guard';
 import { Role } from '../../../shared/enums/user-role.enum';
 import { Roles } from '../../../modules/auth/decorators/roles.decorator';
+import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Role } from '../../../shared/enums/user-role.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
