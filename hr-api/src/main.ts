@@ -21,7 +21,8 @@ async function bootstrap() {
   });
   // enable cors
   app.enableCors({
-    origin: true,
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 

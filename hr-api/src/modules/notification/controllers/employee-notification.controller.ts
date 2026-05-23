@@ -10,9 +10,9 @@ import {
   Patch,
 } from '@nestjs/common';
 import { NotificationService } from '../services/notification.service';
-import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { Roles } from 'src/modules/auth/decorators/roles.decorator';
-import { Role } from 'src/shared/enums/user-role.enum';
+import { JwtAurhGuard } from '../../../modules/auth/guards/jwt-auth.guard';
+import { Roles } from '../../../modules/auth/decorators/roles.decorator';
+import { Role } from '../../../shared/enums/user-role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 /**

@@ -5,9 +5,9 @@ import { LeaveRequest } from '../../leave/entities/leave-request.entity';
 import { LeaveType } from '../../leave/entities/leave-type.entity';
 import { User } from '../../auth/entities/user.entity';
 import { CreateReportDto } from '../dto/create-report.dto';
-import * as ExcelJS from 'exceljs';
 import { ReportLog } from '../entities/report.entity';
 import { ReportType } from '../enums/report.type.enum';
+import * as ExcelJS from 'exceljs';
 
 /**
  * Service responsible for generating Excel reports
@@ -137,7 +137,7 @@ export class ReportService {
       rowIndex++;
     }
 
-    const buffer = await workbook.xlsx.writeBuffer();
+    const buffer = await (workbook.xlsx as any).writeBuffer() as Buffer;
     return buffer as any;
   }
 }
