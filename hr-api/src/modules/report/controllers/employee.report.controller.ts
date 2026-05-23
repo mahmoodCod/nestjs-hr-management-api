@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ReportService } from '../services/report.service';
-import { JwtAurhGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { JwtAurhGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';

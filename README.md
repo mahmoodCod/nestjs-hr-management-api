@@ -308,7 +308,6 @@ npm run test:cov
 
 This project is currently private/internal.  
 Define and add a license file before public distribution.
-=======
 # HR Management API
 
 A production-oriented, role-aware backend API for Human Resources workflows, built with **NestJS**, **TypeORM**, and **MySQL**.
@@ -641,4 +640,4 @@ npm run test:cov
 
 This project is currently private/internal.  
 Define and add a license file before public distribution.
-
+Define and add a license file before public distribution.
