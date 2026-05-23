@@ -49,7 +49,7 @@ describe('ReportController (e2e)', () => {
     userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
 
     // Create test users
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash('MahmoodZar1', 10);
     const employeeMobile = '09932915475';
     const managerMobile = '09932915478';
 
@@ -112,7 +112,7 @@ describe('ReportController (e2e)', () => {
 
   describe('Employee Report Endpoints', () => {
     it('should download leave report as Excel for authenticated employee', async () => {
-      const token = await getTokenForUser('09932915475', 'password123');
+      const token = await getTokenForUser('09932915475', 'MahmoodZar1');
       const response = await request(app.getHttpServer())
         .get('/employee/report')
         .set('Authorization', `Bearer ${token}`)
@@ -136,7 +136,7 @@ describe('ReportController (e2e)', () => {
     });
 
     it('should accept query filters (startDate, endDate, leaveTypeId)', async () => {
-      const token = await getTokenForUser('09932915475', 'password123');
+      const token = await getTokenForUser('09932915475', 'MahmoodZar1');
       const response = await request(app.getHttpServer())
         .get('/employee/report')
         .query({
@@ -153,7 +153,7 @@ describe('ReportController (e2e)', () => {
 
   describe('Manager Report Endpoints', () => {
     it('should download team leave report as Excel for authenticated manager', async () => {
-      const token = await getTokenForUser('09932915478', 'password123');
+      const token = await getTokenForUser('09932915478', 'MahmoodZar1');
       const response = await request(app.getHttpServer())
         .get('/manager/report')
         .set('Authorization', `Bearer ${token}`)
@@ -169,7 +169,7 @@ describe('ReportController (e2e)', () => {
     });
 
     it('should not allow employee to access manager endpoint', async () => {
-      const token = await getTokenForUser('09932915475', 'password123');
+      const token = await getTokenForUser('09932915475', 'MahmoodZar1');
       await request(app.getHttpServer())
         .get('/manager/report')
         .set('Authorization', `Bearer ${token}`)

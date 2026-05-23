@@ -186,7 +186,7 @@ export class LeaveService {
     const message =
       updatedRequest.status === LeaveRequestStatusEnum.APPROVED
         ? `Your leave request from ${updatedRequest.startDate.toDateString()} has been approved.`
-        : `Your leave request from ${updatedRequest.startDate.toDateString()} has been rejected.`;
+        : `Your leave request from ${updatedRequest.endDate.toDateString()} has been rejected.`;
 
     await this.notificationService.create({
       userId: updatedRequest.userId,
