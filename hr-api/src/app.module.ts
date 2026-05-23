@@ -14,6 +14,7 @@ import { LeaveModule } from './modules/leave/leave.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ReportModule } from './modules/report/report.module';
 import { PerformanceModule } from './modules/performance/performance.module';
+import { RecruitmentModule } from './modules/recruitment/recruitment.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { PerformanceModule } from './modules/performance/performance.module';
     NotificationModule,
     ReportModule,
     PerformanceModule,
+    RecruitmentModule,
   ],
   controllers: [AppController],
   providers: [
