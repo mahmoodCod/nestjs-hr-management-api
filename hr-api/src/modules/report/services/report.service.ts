@@ -94,7 +94,14 @@ export class ReportService {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Leave Report');
 
-    // Define columns
+    // Helper function for safe date formatting
+    const formatDateSafe = (date: any): string => {
+      if (!date) return '-';
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return '-';
+      return d.toLocaleDateString('en-US');
+    };
+
     const columns: any[] = [
       { header: 'Row', key: 'row', width: 8 },
       { header: 'Leave Type', key: 'leaveType', width: 20 },
@@ -115,29 +122,25 @@ export class ReportService {
 
     worksheet.columns = columns;
 
-    // Fill rows
     let rowIndex = 1;
     for (const leave of leaves) {
       const row: any = {
         row: rowIndex,
         leaveType: leave.leaveType?.name || 'Unknown',
-        startDate: leave.startDate.toLocaleDateString('en-US'),
-        endDate: leave.endDate.toLocaleDateString('en-US'),
+        startDate: formatDateSafe(leave.startDate),
+        endDate: formatDateSafe(leave.endDate),
         duration: leave.durationDays,
         status: leave.status,
         reason: leave.reason || '---',
       };
-
       if (includeUserInfo) {
-        // Use mobile field from User entity as identifier
         row.userMobile = leave.user?.mobile || `User ${leave.userId}`;
       }
-
       worksheet.addRow(row);
       rowIndex++;
     }
 
-    const buffer = await (workbook.xlsx as any).writeBuffer() as Buffer;
-    return buffer as any;
+    const buffer = (await (workbook.xlsx as any).writeBuffer()) as Buffer;
+    return buffer;
   }
 }
