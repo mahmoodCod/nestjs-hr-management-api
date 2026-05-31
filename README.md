@@ -1,4 +1,4 @@
-﻿# HR Management API
+# HR Management API
 
 A production-oriented, role-aware backend API for Human Resources workflows, built with **NestJS**, **TypeORM**, and **MySQL**.
 
