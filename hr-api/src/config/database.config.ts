@@ -46,12 +46,12 @@ export function buildTypeOrmConfig(
       configService.get<string>('MYSQLUSER'),
     ) ?? 'root';
 
-  const password = firstDefined(
-    configService.get<string>('DB_PASSWORD'),
-    configService.get<string>('MYSQL_PASSWORD'),
-    configService.get<string>('MYSQLPASSWORD'),
-    '',
-  );
+  const password: string =
+    firstDefined(
+      configService.get<string>('DB_PASSWORD'),
+      configService.get<string>('MYSQL_PASSWORD'),
+      configService.get<string>('MYSQLPASSWORD'),
+    ) ?? '';
 
   const database: string =
     firstDefined(
@@ -63,21 +63,20 @@ export function buildTypeOrmConfig(
 
   const resolvedHost = host ?? 'localhost';
 
-  assertProductionHost(resolvedHost);
+  warnIfLocalhostInProduction(resolvedHost);
 
   logConnectionTarget(resolvedHost, port, database, 'env');
 
-  return {
-    type: 'mysql',
-    host: resolvedHost,
-    port,
-    username,
-    password,
-    database,
-    entities: [__dirname + '/../**/entities/*.entity{.ts,.js}'],
-    synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
-    ssl: configService.get('DB_SSL', 'false') === 'true',
-  };
+  return toTypeOrmOptions(
+    {
+      host: resolvedHost,
+      port,
+      username,
+      password,
+      database,
+    },
+    configService,
+  );
 }
 
 function toTypeOrmOptions(
@@ -90,7 +89,16 @@ function toTypeOrmOptions(
   },
   configService: ConfigService,
 ): TypeOrmModuleOptions {
-  assertProductionHost(parsed.host);
+  warnIfLocalhostInProduction(parsed.host);
+
+  const deferConnection =
+    process.env.NODE_ENV === 'production' && isLocalhost(parsed.host);
+
+  if (deferConnection) {
+    logger.warn(
+      'MySQL not configured on host — starting API without DB connection. Set DATABASE_URL or DB_HOST in Render when MySQL is ready.',
+    );
+  }
 
   return {
     type: 'mysql',
@@ -98,25 +106,21 @@ function toTypeOrmOptions(
     entities: [__dirname + '/../**/entities/*.entity{.ts,.js}'],
     synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
     ssl: configService.get('DB_SSL', 'false') === 'true',
+    manualInitialization: deferConnection,
   };
 }
 
-function assertProductionHost(host: string): void {
+function isLocalhost(host: string): boolean {
+  return host === 'localhost' || host === '127.0.0.1' || host === '::1';
+}
+
+function warnIfLocalhostInProduction(host: string): void {
   if (process.env.NODE_ENV !== 'production') return;
+  if (!isLocalhost(host)) return;
 
-  const isLocal =
-    host === 'localhost' || host === '127.0.0.1' || host === '::1';
-
-  if (isLocal) {
-    throw new Error(
-      [
-        'Database host is localhost in production.',
-        'Render has no managed MySQL — remove DB_HOST=localhost from Environment.',
-        'Use an external MySQL host (PlanetScale, Aiven, etc.) or a private MySQL service on Render.',
-        'Set DATABASE_URL=mysql://user:pass@HOST:3306/dbname or DB_HOST to that HOST (not localhost).',
-      ].join(' '),
-    );
-  }
+  logger.warn(
+    'DB_HOST is localhost in production. API will start, but database routes fail until you set DATABASE_URL or a real DB_HOST on Render.',
+  );
 }
 
 function logConnectionTarget(
