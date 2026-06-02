@@ -109,7 +109,12 @@ function assertProductionHost(host: string): void {
 
   if (isLocal) {
     throw new Error(
-      'Database host is localhost in production. Set DATABASE_URL or DB_HOST (and related DB_* vars) in Render Environment, or link your MySQL instance to this Web Service.',
+      [
+        'Database host is localhost in production.',
+        'Render has no managed MySQL — remove DB_HOST=localhost from Environment.',
+        'Use an external MySQL host (PlanetScale, Aiven, etc.) or a private MySQL service on Render.',
+        'Set DATABASE_URL=mysql://user:pass@HOST:3306/dbname or DB_HOST to that HOST (not localhost).',
+      ].join(' '),
     );
   }
 }
@@ -137,7 +142,7 @@ function parseMysqlUrl(url: string): {
   database: string;
 } | null {
   try {
-    const normalized = url.replace(/^mysql:\/\//, 'http://');
+    const normalized = url.replace(/^mysql2?:\/\//, 'http://');
     const parsed = new URL(normalized);
     const database = parsed.pathname.replace(/^\//, '').split('?')[0];
     if (!parsed.hostname || !database) return null;
