@@ -24,7 +24,7 @@ async function bootstrap() {
     origin: ['https://front-hr-managment.vercel.app', 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: ['Content-Type, Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // enable validation global
