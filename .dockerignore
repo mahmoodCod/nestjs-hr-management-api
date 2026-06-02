@@ -1,0 +1,10 @@
+node_modules
+hr-api/node_modules
+hr-api/dist
+hr-api/coverage
+hr-api/uploads
+.git
+.env
+hr-api/.env
+*.md
+!hr-api/README.md
