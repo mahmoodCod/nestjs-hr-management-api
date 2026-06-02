@@ -105,7 +105,7 @@ function toTypeOrmOptions(
     ...parsed,
     entities: [__dirname + '/../**/entities/*.entity{.ts,.js}'],
     synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
-    ssl: configService.get('DB_SSL', 'false') === 'true',
+    ssl: configService.get('DB_SSL', 'false') === 'true' ? {} : false,
     manualInitialization: deferConnection,
   };
 }
