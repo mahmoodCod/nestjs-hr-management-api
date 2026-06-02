@@ -11,7 +11,7 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT', 3001);
+  const port = Number(configService.get('PORT') ?? 3001);
 
   // set api global prefix
   app.setGlobalPrefix('api/v1');
@@ -88,6 +88,6 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1/employee/docs', app, employeeDocument);
   SwaggerModule.setup('api/v1/manager/docs', app, managerDocument);
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 }
 void bootstrap();

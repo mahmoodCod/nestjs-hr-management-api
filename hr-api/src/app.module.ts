@@ -15,28 +15,20 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { ReportModule } from './modules/report/report.module';
 import { PerformanceModule } from './modules/performance/performance.module';
 import { RecruitmentModule } from './modules/recruitment/recruitment.module';
+import { buildTypeOrmConfig } from './config/database.config';
 
 @Module({
   imports: [
-    // config module for get env variable data
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
 
-    // db conection typeorm
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: Number(configService.get('DB_PORT', 3306)),
-        username: configService.get('DB_USERNAME', 'root'),
-        password: configService.get('DB_PASSWORD', ''),
-        database: configService.get('DB_NAME', 'hr-api'),
-        entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
-        synchronize: configService.get('DB_SYNCHRONIZE', true) === 'true',
-      }),
+      useFactory: (configService: ConfigService) =>
+        buildTypeOrmConfig(configService),
       inject: [ConfigService],
     }),
 
