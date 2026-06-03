@@ -12,54 +12,56 @@ export function buildTypeOrmConfig(
 ): TypeOrmModuleOptions {
   const connectionUrl = firstDefined(
     configService.get<string>('DATABASE_URL'),
-    configService.get<string>('MYSQL_URL'),
-    configService.get<string>('MYSQL_INTERNAL_URL'),
+    configService.get<string>('POSTGRES_URL'),
+    configService.get<string>('POSTGRES_INTERNAL_URL'),
   );
 
   if (connectionUrl) {
-    const parsed = parseMysqlUrl(connectionUrl);
+    const parsed = parsePostgresUrl(connectionUrl);
     if (parsed) {
       logConnectionTarget(parsed.host, parsed.port, parsed.database, 'url');
       return toTypeOrmOptions(parsed, configService);
     }
-    logger.warn('DATABASE_URL is set but could not be parsed as mysql:// URL');
+    logger.warn(
+      'DATABASE_URL is set but could not be parsed as postgresql:// URL',
+    );
   }
 
   const host = firstDefined(
     configService.get<string>('DB_HOST'),
-    configService.get<string>('MYSQL_HOST'),
-    configService.get<string>('MYSQLHOST'),
+    configService.get<string>('POSTGRES_HOST'),
+    configService.get<string>('PGHOST'),
   );
 
   const port = Number(
     firstDefined(
       configService.get<string>('DB_PORT'),
-      configService.get<string>('MYSQL_PORT'),
-      configService.get<string>('MYSQLPORT'),
-    ) ?? 3306,
+      configService.get<string>('POSTGRES_PORT'),
+      configService.get<string>('PGPORT'),
+    ) ?? 5432,
   );
 
   const username: string =
     firstDefined(
       configService.get<string>('DB_USERNAME'),
-      configService.get<string>('MYSQL_USER'),
-      configService.get<string>('MYSQLUSER'),
-    ) ?? 'root';
+      configService.get<string>('POSTGRES_USER'),
+      configService.get<string>('PGUSER'),
+    ) ?? 'postgres';
 
   const password: string =
     firstDefined(
       configService.get<string>('DB_PASSWORD'),
-      configService.get<string>('MYSQL_PASSWORD'),
-      configService.get<string>('MYSQLPASSWORD'),
+      configService.get<string>('POSTGRES_PASSWORD'),
+      configService.get<string>('PGPASSWORD'),
     ) ?? '';
 
   const database: string =
     firstDefined(
       configService.get<string>('DB_NAME'),
       configService.get<string>('DB_DATABASE'),
-      configService.get<string>('MYSQL_DATABASE'),
-      configService.get<string>('MYSQLDATABASE'),
-    ) ?? 'hr-api';
+      configService.get<string>('POSTGRES_DB'),
+      configService.get<string>('PGDATABASE'),
+    ) ?? 'hr_api';
 
   const resolvedHost = host ?? 'localhost';
 
@@ -96,17 +98,30 @@ function toTypeOrmOptions(
 
   if (deferConnection) {
     logger.warn(
-      'MySQL not configured on host — starting API without DB connection. Set DATABASE_URL or DB_HOST in Render when MySQL is ready.',
+      'PostgreSQL not configured on host — starting API without DB connection. Set DATABASE_URL or DB_HOST in Render when the database is ready.',
     );
   }
 
   return {
-    type: 'mysql',
+    type: 'postgres',
     ...parsed,
     entities: [__dirname + '/../**/entities/*.entity{.ts,.js}'],
     synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
-    ssl: configService.get('DB_SSL', 'false') === 'true' ? {} : false,
+    ssl: buildSslOptions(configService),
     manualInitialization: deferConnection,
+  };
+}
+
+function buildSslOptions(
+  configService: ConfigService,
+): boolean | { rejectUnauthorized: boolean } {
+  if (configService.get('DB_SSL', 'false') !== 'true') {
+    return false;
+  }
+
+  return {
+    rejectUnauthorized:
+      configService.get('DB_SSL_REJECT_UNAUTHORIZED', 'false') === 'true',
   };
 }
 
@@ -130,7 +145,7 @@ function logConnectionTarget(
   source: 'url' | 'env',
 ): void {
   logger.log(
-    `MySQL target (${source}): host=${host} port=${port} database=${database}`,
+    `PostgreSQL target (${source}): host=${host} port=${port} database=${database}`,
   );
 }
 
@@ -138,7 +153,7 @@ function firstDefined<T>(...values: (T | undefined)[]): T | undefined {
   return values.find((value) => value !== undefined && value !== '');
 }
 
-function parseMysqlUrl(url: string): {
+function parsePostgresUrl(url: string): {
   host: string;
   port: number;
   username: string;
@@ -146,14 +161,14 @@ function parseMysqlUrl(url: string): {
   database: string;
 } | null {
   try {
-    const normalized = url.replace(/^mysql2?:\/\//, 'http://');
+    const normalized = url.replace(/^postgres(?:ql)?:\/\//, 'http://');
     const parsed = new URL(normalized);
     const database = parsed.pathname.replace(/^\//, '').split('?')[0];
     if (!parsed.hostname || !database) return null;
 
     return {
       host: parsed.hostname,
-      port: parsed.port ? Number(parsed.port) : 3306,
+      port: parsed.port ? Number(parsed.port) : 5432,
       username: decodeURIComponent(parsed.username),
       password: decodeURIComponent(parsed.password),
       database,

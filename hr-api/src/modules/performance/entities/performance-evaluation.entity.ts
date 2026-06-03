@@ -52,6 +52,7 @@ export class PerformanceEvaluation {
   @Column({
     type: 'enum',
     enum: EvaluationStatus,
+    enumName: 'evaluation_status_enum',
     default: EvaluationStatus.DRAFT,
   })
   status: EvaluationStatus;

@@ -35,11 +35,12 @@ export class JobPost {
   @Column({
     type: 'enum',
     enum: EmploymentType,
+    enumName: 'employment_type_enum',
     default: EmploymentType.FULL_TIME,
   })
   employmentType: EmploymentType;
 
-  @Column({ type: 'enum', enum: JobStatus, default: JobStatus.OPEN })
+  @Column({ type: 'enum', enum: JobStatus, enumName: 'job_status_enum', default: JobStatus.OPEN })
   status: JobStatus;
 
   @Column({ name: 'expires_at', type: 'date', nullable: true })

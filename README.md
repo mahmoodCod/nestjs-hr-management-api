@@ -1,6 +1,6 @@
 # HR Management API
 
-A production-oriented, role-aware backend API for Human Resources workflows, built with **NestJS**, **TypeORM**, and **MySQL**.
+A production-oriented, role-aware backend API for Human Resources workflows, built with **NestJS**, **TypeORM**, and **PostgreSQL**.
 
 This project provides a clean foundation for HR systems with:
 - authentication and token lifecycle management,
@@ -116,7 +116,7 @@ This API is structured from day one to support growth:
 - **Framework:** NestJS 11
 - **Language:** TypeScript
 - **ORM:** TypeORM
-- **Database:** MySQL
+- **Database:** PostgreSQL
 - **Auth:** Passport + JWT + bcrypt
 - **Validation:** class-validator + class-transformer
 - **Docs:** Swagger (`@nestjs/swagger`)
@@ -175,7 +175,7 @@ docker-compose.yml
 
 - Node.js `>= 20`
 - npm `>= 9`
-- MySQL instance (local or Docker)
+- PostgreSQL instance (local or Docker)
 
 ### Installation
 
@@ -194,11 +194,15 @@ Create `hr-api/.env` (never commit this file). Use placeholders locally and stro
 PORT=3001
 
 DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=your_db_user
+DB_PORT=5432
+DB_USERNAME=postgres
 DB_PASSWORD=your_db_password
 DB_NAME=hr_api
 DB_SYNCHRONIZE=true
+
+# Or use a single connection URL (Render / cloud):
+# DATABASE_URL=postgresql://user:password@host:5432/hr_api
+# DB_SSL=true
 
 JWT_ACCESS_SECRET=replace_with_long_random_string
 JWT_REFRESH_SECRET=replace_with_different_long_random_string
@@ -342,7 +346,7 @@ Run from `hr-api/`:
   - The authenticated user's role must match the route guard (`MANAGER` vs `EMPLOYEE`).
 
 - **Database connection issues**
-  - Verify DB host, port, credentials, and that MySQL is reachable.
+  - Verify DB host, port, credentials, and that PostgreSQL is reachable.
   - Ensure the database exists and the user has sufficient privileges.
 
 ---

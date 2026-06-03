@@ -32,7 +32,7 @@ export class Payroll {
   @Column()
   totalAmount: number;
 
-  @Column({ type: 'enum', enum: PayrollStatus, default: PayrollStatus.PENDING })
+  @Column({ type: 'enum', enum: PayrollStatus, enumName: 'payroll_status_enum', default: PayrollStatus.PENDING })
   status: PayrollStatus;
 
   @Column({ type: 'timestamp', nullable: true })

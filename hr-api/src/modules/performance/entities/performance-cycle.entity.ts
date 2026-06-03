@@ -28,7 +28,7 @@ export class PerformanceCycle {
   @Column({ type: 'date' })
   endDate: Date;
 
-  @Column({ type: 'enum', enum: CycleStatus, default: CycleStatus.DRAFT })
+  @Column({ type: 'enum', enum: CycleStatus, enumName: 'cycle_status_enum', default: CycleStatus.DRAFT })
   status: CycleStatus;
 
   @CreateDateColumn({ name: 'created_at' })

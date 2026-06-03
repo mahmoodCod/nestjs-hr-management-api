@@ -35,6 +35,7 @@ export class Application {
   @Column({
     type: 'enum',
     enum: ApplicationStage,
+    enumName: 'application_stage_enum',
     default: ApplicationStage.RECEIVED,
   })
   stage: ApplicationStage;

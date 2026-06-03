@@ -53,6 +53,7 @@ export class LeaveRequest {
   @Column({
     type: 'enum',
     enum: LeaveRequestStatusEnum,
+    enumName: 'leave_request_status_enum',
     default: LeaveRequestStatusEnum.PENDING,
   })
   status: LeaveRequestStatusEnum;
@@ -60,7 +61,7 @@ export class LeaveRequest {
   @Column({ name: 'approvedBy', nullable: true })
   approvedBy: number;
 
-  @Column({ name: 'approvedAt', type: 'datetime', nullable: true })
+  @Column({ name: 'approvedAt', type: 'timestamp', nullable: true })
   approvedAt: Date;
 
   @CreateDateColumn({ name: 'createdAt' })

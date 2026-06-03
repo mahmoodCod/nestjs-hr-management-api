@@ -13,7 +13,7 @@ export class User {
   @Column()
   password: string; // hashed password
 
-  @Column({ type: 'enum', enum: Role, default: Role.EMPLOYEE })
+  @Column({ type: 'enum', enum: Role, enumName: 'user_role_enum', default: Role.EMPLOYEE })
   role: Role;
 
   @OneToMany(() => RefreshToken, (rt) => rt.user)

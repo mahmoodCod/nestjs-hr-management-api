@@ -7,17 +7,20 @@ services:
   env_file:
    - hr-api/.env
   depends_on:
-   - mysql
+   - postgres
   restart: always
- mysql:
-  image: mysql:9
-  container_name: mysql
+ postgres:
+  image: postgres:16-alpine
+  container_name: postgres
   environment:
-   MYSQL_DB: 'hr-managment'
-   MYSQL_USER: mahmood
-   MYSQL_PASSWORD: 123456
-  volums:
-   - pgdata:/var/lib/mysql/data
+   POSTGRES_DB: hr_api
+   POSTGRES_USER: postgres
+   POSTGRES_PASSWORD: postgres
+  volumes:
+   - pgdata:/var/lib/postgresql/data
   ports:
-   - "3306:3306"
+   - "5432:5432"
   restart: always
+
+volumes:
+ pgdata:

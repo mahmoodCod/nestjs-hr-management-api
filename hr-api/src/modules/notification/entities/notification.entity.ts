@@ -29,6 +29,7 @@ export class Notification {
   @Column({
     type: 'enum',
     enum: NotificationType,
+    enumName: 'notification_type_enum',
     default: NotificationType.SYSTEM,
   })
   type: NotificationType;

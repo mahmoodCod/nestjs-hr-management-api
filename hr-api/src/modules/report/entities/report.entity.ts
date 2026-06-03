@@ -20,10 +20,10 @@ export class ReportLog {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @Column({ type: 'enum', enum: ReportType, default: ReportType.LEAVE_REPORT })
+  @Column({ type: 'enum', enum: ReportType, enumName: 'report_type_enum', default: ReportType.LEAVE_REPORT })
   reportType: ReportType;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   filters: any; // Saved filters (such as startDate, endDate, leaveTypeId)
 
   @CreateDateColumn({ name: 'created_at' })
