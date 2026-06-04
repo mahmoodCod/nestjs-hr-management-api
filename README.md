@@ -11,9 +11,38 @@ This project provides a clean foundation for HR systems with:
 
 ---
 
+## Live Demo
+
+This backend powers the **HRMS** web application used for client demos.
+
+| Resource | URL |
+|----------|-----|
+| **Frontend (HRMS)** | [https://front-hr-managment.vercel.app/](https://front-hr-managment.vercel.app/) |
+
+The API accepts requests from the frontend domain above (CORS). Register or log in through the web app to explore manager and employee workflows.
+
+> **Access note:** If the demo does not open in your browser, try again using a VPN. Some networks restrict access to Vercel-hosted sites.
+
+Swagger (local or deployed API only — not linked from the public frontend):
+
+- **Manager docs:** `/api/v1/manager/docs`
+- **Employee docs:** `/api/v1/employee/docs`
+
+---
+
+## Recent Changes
+
+- **Database migration:** Switched from MySQL to **PostgreSQL** (TypeORM `postgres` driver, `pg` package, Docker Compose service, entity column types updated for PG compatibility).
+- **Cloud deployment:** Connection via `DATABASE_URL` with optional SSL for managed PostgreSQL hosts.
+- **CORS:** Production frontend origin allowlisted; local development on `http://localhost:3000` supported.
+
+---
+
 ## Table of Contents
 
 - [Why This Project](#why-this-project)
+- [Live Demo](#live-demo)
+- [Recent Changes](#recent-changes)
 - [Core Capabilities](#core-capabilities)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -357,7 +386,7 @@ This section describes practices for operators — not a checklist for bypassing
 
 - **Secrets:** never commit `.env`, real credentials, or JWT signing keys. Use a secret manager in production.
 - **Database:** disable `DB_SYNCHRONIZE` outside local development; prefer migrations.
-- **CORS:** restrict allowed origins in production instead of wide-open settings.
+- **CORS:** Restricted to the production frontend ([HRMS](https://front-hr-managment.vercel.app/)) and local development.
 - **Uploads:** validate file types and sizes (already enforced server-side); serve uploads from a controlled path.
 - **Tokens:** keep access tokens short-lived; rotate refresh tokens and signing secrets on a schedule.
 - **Exposure:** do not deploy Swagger or debug endpoints to the public internet without authentication or network restrictions.
