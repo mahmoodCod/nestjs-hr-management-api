@@ -10,10 +10,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x] # می‌توانید 18.x و 22.x هم اضافه کنید
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
